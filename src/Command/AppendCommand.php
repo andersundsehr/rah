@@ -12,7 +12,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'append',
-    description: 'upload files to a rah server without clearing the deployment',
+    description: 'upload files to a rah server (adds to the existing files in the destination directory)',
     aliases: ['a'],
 )]
 class AppendCommand extends UploadCommand

@@ -44,12 +44,13 @@ final class DashboardController extends AbstractController
             }
             return $response;
         }
-        if ($projectName === '') {
+        $project = $this->projectService->getAll($request)[$projectName] ?? null;
+        if (!$project) {
             return $this->redirect($request->getScheme() . '://' . $_SERVER['RAH_HOSTNAME'] . ':' . $request->getPort());
         }
 
         return $this->json([
-            'project' => $this->projectService->getAll($request)[$projectName] ?? throw new NotFoundHttpException('Project not found: ' . $projectName),
+            'project' => $project, // TODO add nice Dashboard
         ]);
     }
 }

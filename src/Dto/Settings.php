@@ -55,8 +55,14 @@ final readonly class Settings
 
     public static function fromEnv(array $options): self
     {
+        $api = $options['api'] ?: getenv('RAH_API') ?: throw new RuntimeException('env RAH_API is not set (required)');
+        $api = rtrim($api, '/');
+        $api = rtrim($api, '/api');
+        if (!str_starts_with($api, 'http')) {
+            throw new RuntimeException('env RAH_API should start with http or https');
+        }
         return new self(
-            $options['api'] ?: getenv('RAH_API') ?: throw new RuntimeException('env RAH_API is not set (required)'),
+            $api,
             self::sanitiseForUri($options['project'] ?: getenv('RAH_PROJECTNAME') ?: getenv('CI_PROJECT_PATH_SLUG') ?: throw new RuntimeException('env RAH_PROJECTNAME or CI_PROJECT_PATH_SLUG is not set (required)')),
             self::sanitiseForUri($options['deployment'] ?: getenv('RAH_DEPLOYMENT') ?: getenv('CI_COMMIT_REF_SLUG') ?: throw new RuntimeException('env RAH_DEPLOYMENT or CI_COMMIT_REF_SLUG is not set (required)')),
             $options['message'] ?: getenv('RAH_DEPLOYMENT_MESSAGE') ?: getenv('CI_COMMIT_MESSAGE') ?: throw new RuntimeException(

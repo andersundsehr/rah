@@ -12,7 +12,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\HttpClient;
@@ -36,7 +35,7 @@ use const PHP_EOL;
 
 #[AsCommand(
     name: 'upload',
-    description: 'upload files to a rah server',
+    description: 'upload files to a rah server (overwrites everything in the destination directory (not the complete deployment)',
     aliases: ['u'],
 )]
 class UploadCommand extends Command
@@ -55,7 +54,7 @@ class UploadCommand extends Command
     {
         $this
             ->addArgument('source', InputArgument::OPTIONAL, 'Directory to upload files from', './public')
-            ->addArgument('destination', InputArgument::OPTIONAL, 'Destination to upload files to', './');
+            ->addArgument('destination', InputArgument::OPTIONAL, 'Destination to upload files to', '.');
 
         Settings::addOptionsToCommand($this);
     }
@@ -67,6 +66,10 @@ class UploadCommand extends Command
         $destination = (string)$input->getArgument('destination');
         $settings = Settings::fromEnv($input->getOptions());
 
+        if (!str_starts_with($destination, '.')) {
+            $destination = './' . ltrim($destination, '/');
+        }
+
         $this->doUpload($source, $destination, $settings);
 
         $this->io->success('Done ' . static::ACTION . 'ing files!');
@@ -77,7 +80,7 @@ class UploadCommand extends Command
     protected function doUpload(string $source, string $destination, Settings $settings): void
     {
         $zipFileName = tempnam(sys_get_temp_dir(), 'rah_') . '.zip';
-        $zipFileName = basename($zipFileName);
+        $zipFileName = basename($zipFileName); // TODO remove after testing
 
         try {
             $this->zipDirectory($source, $zipFileName);
@@ -97,6 +100,7 @@ class UploadCommand extends Command
         if ($zip->open($zipFileName, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             throw new RuntimeException('Could not create zip file');
         }
+        $this->io->writeln('opened ZIP file: ' . $zipFileName, OutputInterface::VERBOSITY_VERY_VERBOSE);
 
         $source = str_replace('\\', '/', realpath($source));
 
@@ -141,7 +145,6 @@ class UploadCommand extends Command
 
         $zip->close();
 
-        $this->io->writeln('file: ' . $zipFileName, OutputInterface::VERBOSITY_VERY_VERBOSE);
         $this->io->success(sprintf('Zipped files successfully! files: %s size: %s', $numFiles, Size::formatSize(filesize($zipFileName))));
     }
 
@@ -151,6 +154,7 @@ class UploadCommand extends Command
         $parameters['destination'] = $destination;
 
         $url = $settings->api . '/api/deployment';
+        $this->io->writeln('start upload to: ' . $url, OutputInterface::VERBOSITY_VERY_VERBOSE);
         $response = $this->client->request(static::ACTION === 'append' ? 'POST' : 'PUT', $url, [
             'query' => $parameters,
             'body' => fopen($zipFileName,'rb'),
@@ -160,8 +164,6 @@ class UploadCommand extends Command
                 'Accept' => 'application/json',
             ],
         ]);
-        $location = $response->getHeaders()['location'] ?? '';
-        dump($location);
         if ($response->getStatusCode() >= 300 || true) {
             $content = $response->getContent(false);
             echo str_replace('http://rah.localhost/', 'http://rah.localhost:3333/', $response->getInfo('url')) . PHP_EOL;
@@ -171,6 +173,7 @@ class UploadCommand extends Command
 
             throw new RuntimeException(sprintf("Upload failed (%s): %s %s", $response->getInfo('url'), $response->getStatusCode(), $content));
         }
+        $location = $response->getHeaders()['location'] ?? '';
         $this->io->success('Uploaded successful! ' . $location);
     }
 }

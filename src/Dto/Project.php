@@ -6,6 +6,7 @@ namespace App\Dto;
 
 use JsonSerializable;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function basename;
 use function glob;
@@ -37,6 +38,15 @@ final class Project implements JsonSerializable
             $deployments[$deploymentName] = Deployment::fromName($request, $this, $deploymentName);
         }
         $this->deployments = $deployments;
+    }
+
+    public static function fromName(Request $request, string $name): self
+    {
+        $project = new self($request, $name);
+        if (!is_dir($project->path)) {
+            throw new NotFoundHttpException('Project not found: ' . $name);
+        }
+        return $project;
     }
 
     public function jsonSerialize(): array

@@ -28,6 +28,15 @@ final class Deployment
         return new self($project, $path, $name, self::getDirectorySize($path), $url);
     }
 
+    public static function createFromSettings(Request $request, Settings $settings): self
+    {
+        $path = '/storage/' . $settings->projectName . '/' . $settings->deployment;
+        if (!mkdir($path, 0777, true) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+        }
+        return self::fromSettings($request, $settings);
+    }
+
     public static function fromSettings(Request $request, Settings $settings): self
     {
         $project = new Project($request, $settings->projectName);
