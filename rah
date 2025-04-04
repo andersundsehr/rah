@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+namespace Rah;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Command\AppendCommand;
+use App\Command\DeleteDeploymentCommand;
+use App\Command\DeleteProjectCommand;
+use App\Command\UploadCommand;
+use Symfony\Component\Console\Application;
+
+$application = new Application();
+$application->setName('rah CLI');
+$application->setVersion('1.0.0');
+
+$application->add(new AppendCommand());
+$application->add(new DeleteDeploymentCommand());
+$application->add(new DeleteProjectCommand());
+$application->add(new UploadCommand());
+
+$application->run();
