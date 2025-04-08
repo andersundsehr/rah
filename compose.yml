@@ -4,19 +4,40 @@ services:
       context: .
       dockerfile: Dockerfile
     init: true
+    ipc: host
+    privileged: true
+    user: 1000:1000
+    working_dir: ${PWD}
     volumes:
       - ./storage:/storage
-      - .:/app
+      - .:${PWD}
       - ~/.ssh:/home/application/.ssh
       - ~/.gitconfig:/home/application/.gitconfig
 #      - ./nginx-config/vhost.conf:/opt/docker/etc/nginx/vhost.conf
+      # open phpstorm from inside the container on Windows:
+      - /mnt/:/mnt/
+      - /run/WSL:/run/WSL
+      - /init:/init:ro
+      - /usr/bin/wslpath:/usr/bin/wslpath:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
+      WEB_DOCUMENT_ROOT: $PWD/public
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
       RAH_PORT: ${RAH_PORT:-80}
       # allows access to all deployments if client has ip from list
       RAH_AUTH_IPS: "213.61.68.122,127.0.0.1"
       # allows access to all deployments if client uses this auth
       RAH_BASIC_AUTH: "rah:rah"
+
+       # open phpstorm from inside the container on Windows:
+      PATH: $PATH
+      WSL2_GUI_APPS_ENABLED: $WSL2_GUI_APPS_ENABLED
+      WSL_INTEROP: $WSL_INTEROP
+      PULSE_SERVER: $PULSE_SERVER
+      WSLENV: $WSLENV
+      WSL_DISTRO_NAME: $WSL_DISTRO_NAME
+      LAUNCH_EDITOR: ${LAUNCH_EDITOR:-code-insiders}
     ports:
       - "3333:80"
     develop:

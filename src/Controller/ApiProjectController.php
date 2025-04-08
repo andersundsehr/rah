@@ -2,14 +2,12 @@
 
 namespace App\Controller;
 
-use App\Dto\Deployment;
 use App\Dto\Project;
-use App\Dto\Settings;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
-use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class ApiProjectController extends AbstractController
@@ -22,7 +20,10 @@ final class ApiProjectController extends AbstractController
     ): JsonResponse
     {
         $project = Project::fromName($request, $projectName);
-        dd($deployment); // TODO delete project
+        
+        if (is_dir($project->path)) {
+            (new Filesystem())->remove($project->path);
+        }
 
         return $this->json([
             'status' => 'ok',

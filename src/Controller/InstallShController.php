@@ -15,7 +15,6 @@ final class InstallShController extends AbstractController
         $content = file_get_contents('/app/install.sh');
         $content = str_replace('###RAH_API###', $request->getSchemeAndHttpHost(), $content);
         return new Response($content, 200, [
-//            'Content-Type' => 'application/x-sh',
             'Content-Type' => 'text/plain',
         ]);
     }

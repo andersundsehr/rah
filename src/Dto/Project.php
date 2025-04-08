@@ -15,6 +15,13 @@ use const GLOB_ONLYDIR;
 
 final class Project implements JsonSerializable
 {
+    private static string $basePath = '/storage';
+
+    public static function setBasePath(string $path): void
+    {
+        self::$basePath = $path;
+    }
+
     /** @var array<string, Deployment> */
     public readonly array $deployments;
     public readonly Size $size;
@@ -26,14 +33,14 @@ final class Project implements JsonSerializable
         public readonly string $name,
 
     ) {
-        $this->path = '/storage/' . $this->name;
+        $this->path = self::$basePath . '/' . $this->name;
         $this->url = Deployment::getUrl($request, $this->name);
         $this->size = Deployment::getDirectorySize($this->path);
 
         // TODO get default deployment from project.json
 
         $deployments = [];
-        foreach (glob('/storage/' . $this->name . '/*', GLOB_ONLYDIR) as $filename) {
+        foreach (glob(self::$basePath . '/' . $this->name . '/*', GLOB_ONLYDIR) as $filename) {
             $deploymentName = basename($filename);
             $deployments[$deploymentName] = Deployment::fromName($request, $this, $deploymentName);
         }

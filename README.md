@@ -10,7 +10,6 @@ is an docker image with that you can host your SPA app and review your PRs with 
 - a deployment has a defined lifetime
 - a deployment can be uploaded with replace or append
 - a deployment can be uploaded with a custom name
-- `_redirects` file supported
 
 ## client usage (CLI)
 
@@ -148,3 +147,29 @@ metadata is stored inside `<STORAGE_ROOT>/<PROJECT>/<DEPLOYMENT_NAME>/deployment
   "deleteIfMissingBranch": "main", // should be deleted if the branch is deleted (optional)
 }
 ````
+
+## Running Tests
+
+This project uses PHPUnit for testing. To run the tests, follow these steps:
+
+1. Ensure you have installed the development dependencies:
+   ````bash
+   docker compose exec --user 1000:1000 rah composer install
+   ````
+
+2. Run the tests using the following command:
+   ````bash
+   docker compose exec --user 1000:1000 rah composer test
+   ````
+
+## Code Coverage
+
+This project includes automated tests with code coverage reporting. 
+
+To run the tests and generate an updated code coverage report, use the following command:
+
+```bash
+docker compose exec --user 1000:1000 rah composer test
+```
+
+The HTML report will be available in the `build/coverage` directory. Open `build/coverage/index.html` in a web browser to view detailed coverage information.

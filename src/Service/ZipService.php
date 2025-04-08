@@ -22,18 +22,15 @@ final readonly class ZipService {
     public function unzip(string $zipFileName, string $path, bool $append)
     {
         $zip = new ZipArchive();
-        $zip->open($zipFileName, 0);
-        if ($zip->getStatusString() !== 'No error') {
-            throw new Exception('Failed to open zip file: ' . $zip->getStatusString());
+        if ($zip->open($zipFileName, 0) !== true) {
+            throw new \RuntimeException('Failed to open the zip file.');
         }
 
         $tempExtractionFolder = tempnam(sys_get_temp_dir(), 'rah-');
         if(is_file($tempExtractionFolder)){
             unlink($tempExtractionFolder);
         }
-        if (!mkdir($tempExtractionFolder) && !is_dir($tempExtractionFolder)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $tempExtractionFolder));
-        }
+        mkdir($tempExtractionFolder);
 
         $filesystem = new Filesystem();
         try {

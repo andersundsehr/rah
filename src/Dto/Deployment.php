@@ -10,6 +10,13 @@ use RecursiveIteratorIterator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use function file_put_contents;
+use function is_dir;
+use function json_encode;
+use function time;
+
+use const JSON_THROW_ON_ERROR;
+
 final class Deployment
 {
     private function __construct(
@@ -31,13 +38,24 @@ final class Deployment
     public static function createFromSettings(Request $request, Settings $settings): self
     {
         $path = '/storage/' . $settings->projectName . '/' . $settings->deployment;
-        if (!mkdir($path, 0777, true) && !is_dir($path)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+        if (!is_dir($path)) {
+            if (!mkdir($path, 0777, true) && !is_dir($path)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+            }
         }
-        return self::fromSettings($request, $settings);
+
+        file_put_contents($path . '/deployment.json', json_encode([
+            'url' => self::getUrl($request, $settings->projectName . '--' . $settings->deployment),
+            'deploymentMessage' => $settings->deploymentMessage,
+            'deleteAfter' => $settings->deleteAfter,
+            'deployed' => time(),
+            'deleteIfMissingBranch' => $settings->deleteIfMissingBranch,
+        ], JSON_THROW_ON_ERROR));
+
+        return self::findSettings($request, $settings);
     }
 
-    public static function fromSettings(Request $request, Settings $settings): self
+    public static function findSettings(Request $request, Settings $settings): self
     {
         $project = new Project($request, $settings->projectName);
 

@@ -34,7 +34,7 @@ final class DashboardController extends AbstractController
 
     private function projectDashboard(Request $request): Response
     {
-        [$projectName, $deploymentName] = $this->projectService->getProjectParts($request);
+        [$projectName, $deploymentName] = $this->projectService->getProjectParts($request->getHost());
 
         if ($deploymentName) {
             $response = $this->fallbackController->show($request);

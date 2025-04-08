@@ -33,7 +33,7 @@ final class ApiDeploymentController extends AbstractController
         #[MapQueryString] Settings $settings
     ): JsonResponse
     {
-        $deployment = Deployment::fromSettings($request, $settings);
+        $deployment = Deployment::findSettings($request, $settings);
         dd($deployment); // TODO delete deployment
 
         return $this->json([
@@ -80,7 +80,7 @@ final class ApiDeploymentController extends AbstractController
             }
         }
 
-        $deployment = Deployment::fromSettings($request, $settings); // update size stats
+        $deployment = Deployment::findSettings($request, $settings); // update size stats
 
         return $this->json([
             'status' => 'ok',

@@ -31,8 +31,7 @@ final class FallbackController extends AbstractController
         $uri = str_replace('..', '', $uri);
         $uri = urldecode($uri);
 
-        [$projectName, $deploymentName] = $this->projectService->getProjectParts($request);
-
+        [$projectName, $deploymentName] = $this->projectService->getProjectParts($request->getHost());
 
         $directory = '/app/public/';
         if ($projectName && $deploymentName) {
