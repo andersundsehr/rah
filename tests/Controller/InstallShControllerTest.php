@@ -13,9 +13,9 @@ class InstallShControllerTest extends RahWebTestCase
         self::assertResponseIsSuccessful();
         self::assertResponseHeaderSame('Content-Type', 'text/plain; charset=UTF-8');
 
-        $content = $this->client->getResponse()->getContent();
-        $this->assertStringNotContainsString('###RAH_API###', $content);
-        $this->assertStringContainsString('http://' . self::TEST_HOSTNAME, $content);
+        $content = (string)$this->client->getResponse()->getContent();
+        self::assertStringNotContainsString('###RAH_API###', $content);
+        self::assertStringContainsString('http://' . self::TEST_HOSTNAME, $content);
     }
 
     public function testDiffrentDomain(): void
@@ -30,7 +30,7 @@ class InstallShControllerTest extends RahWebTestCase
         $this->client->request('GET', '/install.sh', [],[], ['HTTP_HOST' => 'not-localhost']);
 
         self::assertResponseStatusCodeSame(500);
-        $content = $this->client->getResponse()->getContent();
-        $this->assertStringContainsString('base domain mismatch: not-localhost does not end with .test.localhost', $content);
+        $content = (string)$this->client->getResponse()->getContent();
+        self::assertStringContainsString('base domain mismatch: not-localhost does not end with .test.localhost', $content);
     }
 }

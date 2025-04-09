@@ -29,9 +29,13 @@ abstract class RahWebTestCase extends WebTestCase
         $this->filesystem->mkdir($this->testProjectPath);
 
         $_ENV['RAH_HOSTNAME'] = self::TEST_HOSTNAME;
-        $this->client = WebTestCase::createClient([], ['HTTP_HOST' => self::TEST_HOSTNAME, 'HTTP_ACCEPT' => 'application/json']);
+        $this->client = parent::createClient([], ['HTTP_HOST' => self::TEST_HOSTNAME, 'HTTP_ACCEPT' => 'application/json']);
     }
 
+    /**
+     * @param array<mixed> $options
+     * @param array<mixed> $server
+     */
     public static function createClient(array $options = [], array $server = []): KernelBrowser
     {
         throw new \RuntimeException('use $this->client instead');

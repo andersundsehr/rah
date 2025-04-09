@@ -29,7 +29,7 @@ final readonly class ProjectService
         #[Autowire(env: 'RAH_STORAGE_PATH')]
         private string $storagePath,
         #[Autowire(env: 'RAH_HOSTNAME')]
-        private string $configHostname,
+        private string $rahHostname,
     ) {
     }
 
@@ -38,10 +38,10 @@ final readonly class ProjectService
      */
     public function getProjectParts(string $host): array
     {
-        if(!str_ends_with($host, $this->configHostname)) {
-            throw new RuntimeException('base domain mismatch: ' . $host . ' does not end with .' . $this->configHostname);
+        if(!str_ends_with($host, $this->rahHostname)) {
+            throw new RuntimeException('base domain mismatch: ' . $host . ' does not end with .' . $this->rahHostname);
         }
-        $part = str_replace($this->configHostname, '', $host);
+        $part = str_replace($this->rahHostname, '', $host);
         $part = trim($part, '.');
         if (str_contains($part, '.')) {
             throw new RuntimeException('Invalid project name: ' . $part);

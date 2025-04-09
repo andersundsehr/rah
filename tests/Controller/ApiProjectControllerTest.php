@@ -17,11 +17,11 @@ class ApiProjectControllerTest extends RahWebTestCase
         $this->client->request('DELETE', '/api/project?projectName=test_project', [], [], ['CONTENT_TYPE' => 'application/json']);
 
         // Assert response
-        $this->assertResponseIsSuccessful();
-        $this->assertJsonStringEqualsJsonString(json_encode([
+        self::assertResponseIsSuccessful();
+        self::assertJsonStringEqualsJsonString(json_encode([
             'status' => 'ok',
             'message' => 'deleted',
-        ]), $this->client->getResponse()->getContent());
+        ], JSON_THROW_ON_ERROR), (string)$this->client->getResponse()->getContent());
 
         // Assert the project directory was deleted
         $this->assertFalse($this->filesystem->exists($this->testProjectPath));
@@ -33,10 +33,10 @@ class ApiProjectControllerTest extends RahWebTestCase
         $this->client->request('DELETE', '/api/project?projectName=test_project_not_found', [], [], ['CONTENT_TYPE' => 'application/json']);
 
         // Assert response
-        $this->assertResponseIsSuccessful();
-        $this->assertJsonStringEqualsJsonString(json_encode([
+        self::assertResponseIsSuccessful();
+        self::assertJsonStringEqualsJsonString(json_encode([
             'status' => 'ok',
             'message' => 'already deleted',
-        ]), $this->client->getResponse()->getContent());
+        ], JSON_THROW_ON_ERROR), (string)$this->client->getResponse()->getContent());
     }
 }

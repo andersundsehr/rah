@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\ProjectService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -16,12 +17,14 @@ final class DashboardController extends AbstractController
 {
     public function __construct(
         private readonly ProjectService $projectService,
+        #[Autowire(env: 'RAH_HOSTNAME')]
+        private string $rahHostname,
     ) {}
 
     #[Route('/', name: 'app_dashboard')]
     public function index(Request $request): Response
     {
-        if ($request->getHost() === $_SERVER['RAH_HOSTNAME']) {
+        if ($request->getHost() === $this->rahHostname) {
             return $this->dashboard();
         }
 
@@ -49,8 +52,6 @@ final class DashboardController extends AbstractController
                 return $response;
             }
 
-            // TODO should we redirect? or show 404? or forward?
-            // return $this->redirect($request->getScheme() . '://' . $projectName . '.' . $_SERVER['RAH_HOSTNAME'] . ':' . $request->getPort());
             // fall through to show the project dashboard or main dashboard
             $statusCode = 404;
         }
@@ -61,7 +62,6 @@ final class DashboardController extends AbstractController
             $response = $this->dashboard();
             $response->setStatusCode(404);
             return $response;
-//            return $this->redirect($request->getScheme() . '://' . $_SERVER['RAH_HOSTNAME'] . ':' . $request->getPort());
         }
 
         return $this->json([

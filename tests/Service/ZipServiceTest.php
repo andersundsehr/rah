@@ -76,7 +76,7 @@ class ZipServiceTest extends RahKernelTestcase
     {
         // Create an invalid zip file
         $invalidZipFileName = $this->tempStorage . '/invalid.zip';
-        file_put_contents($invalidZipFileName, 'This is not a valid zip file.');
+        $this->filesystem->dumpFile($invalidZipFileName, 'This is not a valid zip file.');
 
         // Define the extraction path
         $extractionPath = $this->tempStorage . '/extracted';

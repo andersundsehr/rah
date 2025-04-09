@@ -28,8 +28,6 @@ abstract class RahKernelTestcase extends KernelTestCase
         $_ENV['RAH_HOSTNAME'] = 'test.localhost';
         $requestStack = self::getContainer()->get(RequestStack::class);
 
-        assert($requestStack instanceof RequestStack);
-
         do {
             // reset the stack
             $x = $requestStack->pop();

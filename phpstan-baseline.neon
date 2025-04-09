@@ -1,13 +1,43 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to function assert\(\) with true will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 3
-			path: packages/grumphp-xliff-task/src/XliffLinter.php
+			message: '#^Function shell_exec is unsafe to use\. It can return FALSE instead of throwing an exception\. Please add ''use function Safe\\shell_exec;'' at the beginning of the file to use the variant provided by the ''thecodingmachine/safe'' library\.$#'
+			identifier: theCodingMachineSafe.function
+			count: 1
+			path: rector.php
 
 		-
-			message: '#^Instanceof between DOMElement and DOMElement will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 3
-			path: packages/grumphp-xliff-task/src/XliffLinter.php
+			message: '#^Parameter \#1 \$options of static method App\\Dto\\Settings\:\:fromEnv\(\) expects array\<string, string\>, array\<array\|bool\|float\|int\|string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/DeleteProjectCommand.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Command/DeleteProjectCommand.php
+
+		-
+			message: '#^Parameter \#1 \$options of static method App\\Dto\\Settings\:\:fromEnv\(\) expects array\<string, string\>, array\<array\|bool\|float\|int\|string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Command/UploadCommand.php
+
+		-
+			message: '#^Right side of \|\| is always true\.$#'
+			identifier: booleanOr.rightAlwaysTrue
+			count: 1
+			path: src/Command/UploadCommand.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Command/UploadCommand.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: tests/bootstrap.php

@@ -22,6 +22,7 @@ final class RahBinController extends AbstractController
         if ($request->getHost() !== $this->rahHostname) {
             return $this->forward('App\Controller\FallbackController::show');
         }
-        return $this->file('/app/rah', 'rah');
+        // TODO change location to the builded rah with php included
+        return $this->file(__DIR__ . '/../../rah', 'rah');
     }
 }
