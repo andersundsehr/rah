@@ -9,7 +9,7 @@ services:
     user: 1000:1000
     working_dir: ${PWD}
     volumes:
-      - ./storage:/storage
+      - ./storage-root:/storage
       - .:${PWD}
       - ~/.ssh:/home/application/.ssh
       - ~/.gitconfig:/home/application/.gitconfig
@@ -24,6 +24,7 @@ services:
     environment:
       WEB_DOCUMENT_ROOT: $PWD/public
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
+      RAH_STORAGE_PATH: ${RAH_STORAGE_PATH:-./storage}
       RAH_PORT: ${RAH_PORT:-80}
       # allows access to all deployments if client has ip from list
       RAH_AUTH_IPS: "213.61.68.122,127.0.0.1"

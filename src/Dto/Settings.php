@@ -53,6 +53,9 @@ final readonly class Settings
         public string $deleteIfMissingBranch,
     ) {}
 
+    /**
+     * @param array<string, string> $options
+     */
     public static function fromEnv(array $options): self
     {
         $api = $options['api'] ?: getenv('RAH_API') ?: throw new RuntimeException('env RAH_API is not set (required)');
@@ -79,7 +82,7 @@ final readonly class Settings
     public static function sanitiseForUri(string $string): string
     {
         $string = strtolower($string);
-        $string = preg_replace('/[^a-z0-9-]+/', '-', $string);
+        $string = \Safe\preg_replace('/[^a-z0-9-]+/', '-', $string);
         return trim($string, '-');
     }
 

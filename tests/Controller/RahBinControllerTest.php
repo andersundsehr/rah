@@ -2,20 +2,26 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class RahBinControllerTest extends WebTestCase
+class RahBinControllerTest extends RahWebTestCase
 {
     public function testIndex(): void
     {
-        $client = static::createClient();
+        $this->client->request('GET', '/rah');
 
-        // Mock the RAH_HOSTNAME constant
-        $client->setServerParameter('HTTP_HOST', 'rah.localhost');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('content-disposition', 'attachment; filename=rah');
+    }
+    public function testSubDomain(): void
+    {
+        $this->client->request('GET', '/rah', [], [], ['HTTP_HOST' => 'sub.test.localhost']);
 
-        $client->request('GET', '/rah', [], [], ['HTTP_ACCEPT' => 'application/json']);
+        self::assertResponseStatusCodeSame(404);
+    }
+    public function testWrongDomain(): void
+    {
+        $this->client->request('GET', '/rah', [], [], ['HTTP_HOST' => 'not-localhost']);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('content-disposition', 'attachment; filename=rah');
+        self::assertResponseStatusCodeSame(500);
     }
 }

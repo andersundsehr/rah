@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\ProjectService;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,22 +14,25 @@ use function basename;
 
 final class DashboardController extends AbstractController
 {
-    public function __construct(private FallbackController $fallbackController, private readonly ProjectService $projectService) {}
+    public function __construct(
+        private readonly ProjectService $projectService,
+    ) {}
 
     #[Route('/', name: 'app_dashboard')]
     public function index(Request $request): Response
     {
         if ($request->getHost() === $_SERVER['RAH_HOSTNAME']) {
-            return $this->dashboard($request);
+            return $this->dashboard();
         }
 
         return $this->projectDashboard($request);
     }
 
-    private function dashboard(Request $request): Response
+    private function dashboard(): Response
     {
         return $this->json([
-            'projects' => $this->projectService->getAll($request),
+            'status' => 'TODO add nice Dashboard',
+            'projects' => $this->projectService->loadAll(), // TODO add nice Dashboard
         ]);
     }
 
@@ -36,21 +40,33 @@ final class DashboardController extends AbstractController
     {
         [$projectName, $deploymentName] = $this->projectService->getProjectParts($request->getHost());
 
+        $statusCode = 200;
+
         if ($deploymentName) {
-            $response = $this->fallbackController->show($request);
-            // TODO should we redirect? or show 404? or forward?
-            if ($response->getStatusCode() === 404) {
-                return $this->redirect($request->getScheme() . '://' . $projectName . '.' . $_SERVER['RAH_HOSTNAME'] . ':' . $request->getPort());
+           $response = $this->forward('App\Controller\FallbackController::show');
+
+            if ($response->getStatusCode() !== 404) {
+                return $response;
             }
-            return $response;
+
+            // TODO should we redirect? or show 404? or forward?
+            // return $this->redirect($request->getScheme() . '://' . $projectName . '.' . $_SERVER['RAH_HOSTNAME'] . ':' . $request->getPort());
+            // fall through to show the project dashboard or main dashboard
+            $statusCode = 404;
         }
-        $project = $this->projectService->getAll($request)[$projectName] ?? null;
-        if (!$project) {
-            return $this->redirect($request->getScheme() . '://' . $_SERVER['RAH_HOSTNAME'] . ':' . $request->getPort());
+
+        try {
+            $project = $this->projectService->load($projectName);
+        } catch (NotFoundHttpException) {
+            $response = $this->dashboard();
+            $response->setStatusCode(404);
+            return $response;
+//            return $this->redirect($request->getScheme() . '://' . $_SERVER['RAH_HOSTNAME'] . ':' . $request->getPort());
         }
 
         return $this->json([
+            'status' => 'TODO add nice Dashboard',
             'project' => $project, // TODO add nice Dashboard
-        ]);
+        ], $statusCode);
     }
 }

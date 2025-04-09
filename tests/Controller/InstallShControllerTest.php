@@ -4,22 +4,33 @@ namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class InstallShControllerTest extends WebTestCase
+class InstallShControllerTest extends RahWebTestCase
 {
     public function testIndex(): void
     {
-        $client = static::createClient();
+        $this->client->request('GET', '/install.sh');
 
-        // Mock the RAH_HOSTNAME constant
-        $client->setServerParameter('HTTP_HOST', 'rah.localhost');
+        self::assertResponseIsSuccessful();
+        self::assertResponseHeaderSame('Content-Type', 'text/plain; charset=UTF-8');
 
-        $crawler = $client->request('GET', '/install.sh', [], [], ['HTTP_ACCEPT' => 'application/json']);
-
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('Content-Type', 'text/plain; charset=UTF-8');
-
-        $content = $client->getResponse()->getContent();
+        $content = $this->client->getResponse()->getContent();
         $this->assertStringNotContainsString('###RAH_API###', $content);
-        $this->assertStringContainsString('rah.localhost', $content);
+        $this->assertStringContainsString('http://' . self::TEST_HOSTNAME, $content);
+    }
+
+    public function testDiffrentDomain(): void
+    {
+        $this->client->request('GET', '/install.sh', [],[], ['HTTP_HOST' => 'sub.test.localhost']);
+
+        self::assertResponseStatusCodeSame(404);
+    }
+
+    public function testWrongDomain(): void
+    {
+        $this->client->request('GET', '/install.sh', [],[], ['HTTP_HOST' => 'not-localhost']);
+
+        self::assertResponseStatusCodeSame(500);
+        $content = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString('base domain mismatch: not-localhost does not end with .test.localhost', $content);
     }
 }

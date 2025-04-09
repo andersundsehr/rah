@@ -88,6 +88,7 @@ services:
       # RAH_API_KEY is generated and placed in rah/.env + it is printed in the docker log on startup
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
       RAH_PORT: ${RAH_PORT:-80}
+      RAH_STORAGE_PATH: '/storage'
       # allows access to all deployments if client has ip from list
       RAH_AUTH_IPS: "213.61.68.122,127.0.0.1"
       # allows access to all deployments if client uses this auth
@@ -126,12 +127,12 @@ includes:
 
 ### INTERNAL: folder structure and deployment metadata
 
-`<STORAGE_ROOT>/<PROJECT>/<DEPLOYMENT_NAME>`
-- `STORAGE_ROOT` is defined as environment variable inside the container
+`<RAH_STORAGE_PATH>/<PROJECT>/<DEPLOYMENT_NAME>`
+- `RAH_STORAGE_PATH` (env) is defined as environment variable inside the container
 - `PROJECT` is the name of the project
 - `DEPLOYMENT_NAME` is the name of the deployment (even Prod needs a name) can be [a-z0-9]
 
-project metadata is stored inside `<STORAGE_ROOT>/<PROJECT>/project.json` file.
+project metadata is stored inside `<RAH_STORAGE_PATH>/<PROJECT>/project.json` file.
 
 ````json5
 {
@@ -139,7 +140,7 @@ project metadata is stored inside `<STORAGE_ROOT>/<PROJECT>/project.json` file.
 }
 ````
 
-metadata is stored inside `<STORAGE_ROOT>/<PROJECT>/<DEPLOYMENT_NAME>/deployment.json` file.
+metadata is stored inside `<RAH_STORAGE_PATH>/<PROJECT>/<DEPLOYMENT_NAME>/deployment.json` file.
 ````json5
 {
   "deleteAfter": "2025-01-01T00:00:00Z", // when the deployment should be deleted (optional)

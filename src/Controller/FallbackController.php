@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -79,15 +80,8 @@ final class FallbackController extends AbstractController
 
     private function listDirectory(string $filename, Request $request, string $uri, string $directory): Response
     {
-        $files = [];
-        $dir = dir($filename);
-        while (false !== ($entry = $dir->read())) {
-            if ($entry === '.' || $entry === '..') {
-                continue;
-            }
-            $files[] = $entry;
-        }
-        $dir->close();
+        $finder = new Finder();
+        $files = $finder->in($filename)->depth('0')->sortByName()->sortByType();
 
         $css = <<<CSS
 :root {
@@ -107,9 +101,8 @@ CSS;
             $html .= '<li style="padding: 5px;"><a href="' . $request->getSchemeAndHttpHost() . '/' . $dirname . '/">' . ($dirname === '.' ? '. &lt;parent>' : $dirname) . '</a></li>';
         }
         foreach ($files as $file) {
-            $isDir = is_dir($filename . '/' . $file);
-            $uriPath = rtrim($uri, '/') . '/' . $file;
-            $html .= '<li style="padding: 5px;"><a href="' . $request->getSchemeAndHttpHost() . '/' . $uriPath . '">' . $uriPath . ($isDir ? '/' : '') . '</a></li>';
+            $uriPath = $uri . $file->getBasename();
+            $html .= '<li style="padding: 5px;"><a href="' . $request->getSchemeAndHttpHost() . '/' . $uriPath . '">' . $uriPath . ($file->isDir() ? '/' : '') . '</a></li>';
         }
         $html .= '</ul>';
         $html .= '</body></html>';

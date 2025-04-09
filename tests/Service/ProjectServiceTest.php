@@ -4,31 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use App\Dto\Project;
 use App\Service\ProjectService;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Filesystem\Filesystem;
+use RuntimeException;
 
-class ProjectServiceTest extends TestCase
+class ProjectServiceTest extends RahKernelTestcase
 {
-    private string $tempStorage;
-    private Filesystem $filesystem;
     private ProjectService $projectService;
 
     protected function setUp(): void
     {
-        $this->filesystem = new Filesystem();
-        $this->tempStorage = sys_get_temp_dir() . '/project_service_test';
-        $this->filesystem->mkdir($this->tempStorage);
-        putenv('RAH_HOSTNAME=test.localhost');
-        $_SERVER['RAH_HOSTNAME'] = 'test.localhost';
-
-        $this->projectService = new ProjectService($this->filesystem, $this->tempStorage);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->filesystem->remove($this->tempStorage);
+        parent::setUp();
+        $this->projectService = self::getContainer()->get(ProjectService::class);
     }
 
     public function testGetProjectParts(): void
@@ -40,24 +27,32 @@ class ProjectServiceTest extends TestCase
 
     public function testGetProjectPartsInvalidName(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid project name : invalid..name');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Invalid project name: invalid.name');
 
-        $this->projectService->getProjectParts('invalid..name');
+        $this->projectService->getProjectParts('invalid.name.test.localhost');
     }
 
-    public function testGetAll(): void
+    public function testGetProjectPartsWrongDomain(): void
     {
-        $request = new Request();
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('base domain mismatch: not-localhost does not end with .test.localhost');
 
+        $this->projectService->getProjectParts('not-localhost');
+    }
+
+    public function testLoadAll(): void
+    {
         // Create mock project directories
         $this->filesystem->mkdir($this->tempStorage . '/project1');
         $this->filesystem->mkdir($this->tempStorage . '/project2');
 
-        $projects = $this->projectService->getAll($request);
+        $projects = $this->projectService->loadAll();
 
         $this->assertCount(2, $projects);
         $this->assertArrayHasKey('project1', $projects);
+        $this->assertInstanceOf(Project::class, $projects['project1']);
         $this->assertArrayHasKey('project2', $projects);
+        $this->assertInstanceOf(Project::class, $projects['project2']);
     }
 }

@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use ZipArchive;
@@ -44,7 +45,7 @@ class UploadCommand extends Command
     private HttpClientInterface $client;
     private SymfonyStyle $io;
 
-    public function __construct()
+    public function __construct(private Filesystem $filesystem = new Filesystem())
     {
         $this->client = HttpClient::create();
         parent::__construct();
@@ -79,7 +80,7 @@ class UploadCommand extends Command
 
     protected function doUpload(string $source, string $destination, Settings $settings): void
     {
-        $zipFileName = tempnam(sys_get_temp_dir(), 'rah_') . '.zip';
+        $zipFileName = $this->filesystem->tempnam(sys_get_temp_dir(), 'rah_', '.zip');
         $zipFileName = basename($zipFileName); // TODO remove after testing
 
         try {
@@ -87,9 +88,7 @@ class UploadCommand extends Command
 
             $this->uploadToServer($zipFileName, $destination, $settings);
         } finally {
-            if (is_file($zipFileName)) {
-                unlink($zipFileName);
-            }
+            $this->filesystem->remove($zipFileName);
         }
     }
 
@@ -102,7 +101,7 @@ class UploadCommand extends Command
         }
         $this->io->writeln('opened ZIP file: ' . $zipFileName, OutputInterface::VERBOSITY_VERY_VERBOSE);
 
-        $source = str_replace('\\', '/', realpath($source));
+        $source = str_replace('\\', '/', \Safe\realpath($source));
 
         if (is_dir($source)) {
             $files = new RecursiveIteratorIterator(
@@ -145,7 +144,7 @@ class UploadCommand extends Command
 
         $zip->close();
 
-        $this->io->success(sprintf('Zipped files successfully! files: %s size: %s', $numFiles, Size::formatSize(filesize($zipFileName))));
+        $this->io->success(sprintf('Zipped files successfully! files: %s size: %s', $numFiles, Size::formatSize(\Safe\filesize($zipFileName))));
     }
 
     private function uploadToServer(string $zipFileName, string $destination, Settings $settings): void
@@ -157,19 +156,19 @@ class UploadCommand extends Command
         $this->io->writeln('start upload to: ' . $url, OutputInterface::VERBOSITY_VERY_VERBOSE);
         $response = $this->client->request(static::ACTION === 'append' ? 'POST' : 'PUT', $url, [
             'query' => $parameters,
-            'body' => fopen($zipFileName,'rb'),
+            'body' => \Safe\fopen($zipFileName, 'rb'),
             'headers' => [
                 'Content-Type' => 'application/zip',
-                'Content-Length' => (string)filesize($zipFileName),
+                'Content-Length' => (string)\Safe\filesize($zipFileName),
                 'Accept' => 'application/json',
             ],
         ]);
         if ($response->getStatusCode() >= 300 || true) {
             $content = $response->getContent(false);
             echo str_replace('http://rah.localhost/', 'http://rah.localhost:3333/', $response->getInfo('url')) . PHP_EOL;
-            echo json_encode(json_decode($content), JSON_PRETTY_PRINT) . PHP_EOL;
+            echo \Safe\json_encode(\Safe\json_decode($content), JSON_PRETTY_PRINT) . PHP_EOL;
 
-            echo 'size: ' . Size::formatSize(filesize($zipFileName)) . PHP_EOL;
+            echo 'size: ' . Size::formatSize(\Safe\filesize($zipFileName)) . PHP_EOL;
 
             throw new RuntimeException(sprintf("Upload failed (%s): %s %s", $response->getInfo('url'), $response->getStatusCode(), $content));
         }

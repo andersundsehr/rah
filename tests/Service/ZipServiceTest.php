@@ -4,43 +4,35 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use App\Service\ProjectService;
 use App\Service\ZipService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ZipServiceTest extends TestCase
+class ZipServiceTest extends RahKernelTestcase
 {
-    private string $tempDir;
-    private Filesystem $filesystem;
+    private ZipService $zipService;
 
     protected function setUp(): void
     {
-        $this->filesystem = new Filesystem();
-        $this->tempDir = sys_get_temp_dir() . '/zip_service_test';
-        $this->filesystem->mkdir($this->tempDir);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->filesystem->remove($this->tempDir);
+        parent::setUp();
+        $this->zipService = self::getContainer()->get(ZipService::class);
     }
 
     public function testUnzip(): void
     {
-        $zipService = new ZipService();
-
         // Create a temporary zip file
-        $zipFileName = $this->tempDir . '/test.zip';
+        $zipFileName = $this->tempStorage . '/test.zip';
         $zip = new \ZipArchive();
         $zip->open($zipFileName, \ZipArchive::CREATE);
         $zip->addFromString('test.txt', 'This is a test file.');
         $zip->close();
 
         // Define the extraction path
-        $extractionPath = $this->tempDir . '/extracted';
+        $extractionPath = $this->tempStorage . '/extracted';
 
         // Call the unzip method
-        $zipService->unzip($zipFileName, $extractionPath, false);
+        $this->zipService->unzip($zipFileName, $extractionPath, false);
 
         // Assert the file was extracted
         $this->assertDirectoryExists($extractionPath);
@@ -50,30 +42,28 @@ class ZipServiceTest extends TestCase
 
     public function testUnzipWithAppend(): void
     {
-        $zipService = new ZipService();
-
         // Create a temporary zip file
-        $zipFileName = $this->tempDir . '/test.zip';
+        $zipFileName = $this->tempStorage . '/test.zip';
         $zip = new \ZipArchive();
         $zip->open($zipFileName, \ZipArchive::CREATE);
         $zip->addFromString('test1.txt', 'This is the first test file.');
         $zip->close();
 
         // Define the extraction path
-        $extractionPath = $this->tempDir . '/extracted';
+        $extractionPath = $this->tempStorage . '/extracted';
 
         // Extract the first zip file
-        $zipService->unzip($zipFileName, $extractionPath, false);
+        $this->zipService->unzip($zipFileName, $extractionPath, false);
 
         // Create another zip file to append
-        $zipFileName2 = $this->tempDir . '/test2.zip';
+        $zipFileName2 = $this->tempStorage . '/test2.zip';
         $zip = new \ZipArchive();
         $zip->open($zipFileName2, \ZipArchive::CREATE);
         $zip->addFromString('test2.txt', 'This is the second test file.');
         $zip->close();
 
         // Call the unzip method with append
-        $zipService->unzip($zipFileName2, $extractionPath, true);
+        $this->zipService->unzip($zipFileName2, $extractionPath, true);
 
         // Assert both files exist
         $this->assertFileExists($extractionPath . '/test1.txt');
@@ -84,20 +74,18 @@ class ZipServiceTest extends TestCase
 
     public function testUnzipThrowsExceptionForInvalidZip(): void
     {
-        $zipService = new ZipService();
-
         // Create an invalid zip file
-        $invalidZipFileName = $this->tempDir . '/invalid.zip';
+        $invalidZipFileName = $this->tempStorage . '/invalid.zip';
         file_put_contents($invalidZipFileName, 'This is not a valid zip file.');
 
         // Define the extraction path
-        $extractionPath = $this->tempDir . '/extracted';
+        $extractionPath = $this->tempStorage . '/extracted';
 
         // Expect an exception to be thrown
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Failed to open the zip file.');
 
         // Call the unzip method with the invalid zip file
-        $zipService->unzip($invalidZipFileName, $extractionPath, false);
+        $this->zipService->unzip($invalidZipFileName, $extractionPath, false);
     }
 }
