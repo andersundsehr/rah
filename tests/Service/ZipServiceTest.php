@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use ZipArchive;
+use RuntimeException;
 use App\Service\ProjectService;
 use App\Service\ZipService;
 use PHPUnit\Framework\TestCase;
@@ -23,8 +25,8 @@ class ZipServiceTest extends RahKernelTestcase
     {
         // Create a temporary zip file
         $zipFileName = $this->tempStorage . '/test.zip';
-        $zip = new \ZipArchive();
-        $zip->open($zipFileName, \ZipArchive::CREATE);
+        $zip = new ZipArchive();
+        $zip->open($zipFileName, ZipArchive::CREATE);
         $zip->addFromString('test.txt', 'This is a test file.');
         $zip->close();
 
@@ -44,8 +46,8 @@ class ZipServiceTest extends RahKernelTestcase
     {
         // Create a temporary zip file
         $zipFileName = $this->tempStorage . '/test.zip';
-        $zip = new \ZipArchive();
-        $zip->open($zipFileName, \ZipArchive::CREATE);
+        $zip = new ZipArchive();
+        $zip->open($zipFileName, ZipArchive::CREATE);
         $zip->addFromString('test1.txt', 'This is the first test file.');
         $zip->close();
 
@@ -57,8 +59,8 @@ class ZipServiceTest extends RahKernelTestcase
 
         // Create another zip file to append
         $zipFileName2 = $this->tempStorage . '/test2.zip';
-        $zip = new \ZipArchive();
-        $zip->open($zipFileName2, \ZipArchive::CREATE);
+        $zip = new ZipArchive();
+        $zip->open($zipFileName2, ZipArchive::CREATE);
         $zip->addFromString('test2.txt', 'This is the second test file.');
         $zip->close();
 
@@ -82,7 +84,7 @@ class ZipServiceTest extends RahKernelTestcase
         $extractionPath = $this->tempStorage . '/extracted';
 
         // Expect an exception to be thrown
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Failed to open the zip file.');
 
         // Call the unzip method with the invalid zip file

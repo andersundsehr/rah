@@ -15,6 +15,7 @@ final readonly class FileSizeService
         foreach ((new Finder())->files()->in($path) as $file) {
             $bytesTotal += $file->getSize();
         }
+
         return new Size($bytesTotal);
     }
 }

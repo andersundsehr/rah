@@ -32,6 +32,7 @@ abstract class RahKernelTestcase extends KernelTestCase
             // reset the stack
             $x = $requestStack->pop();
         } while ($x);
+
         $requestStack->push(new Request([], [], [], [], [], [
             'HTTP_HOST' => $_ENV['RAH_HOSTNAME'],
             'SERVER_NAME' => $_ENV['RAH_HOSTNAME'],

@@ -12,17 +12,18 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class ApiProjectController extends AbstractController
 {
-    public function __construct(private readonly ProjectService $projectService) {}
+    public function __construct(private readonly ProjectService $projectService)
+    {
+    }
 
     #[Route('/api/project', name: 'app_api_project_delete', methods: ['DELETE'])]
     #[Route('/api/project:delete', name: 'app_api_project_delete_get', methods: ['GET'])]
     public function deleteProject(
         #[MapQueryParameter] string $projectName
-    ): JsonResponse
-    {
+    ): JsonResponse {
         try {
             $project = $this->projectService->load($projectName);
-        } catch (NotFoundHttpException){
+        } catch (NotFoundHttpException) {
             return $this->json([
                 'status' => 'ok',
                 'message' => 'already deleted',

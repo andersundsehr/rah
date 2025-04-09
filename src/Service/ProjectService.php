@@ -38,14 +38,16 @@ final readonly class ProjectService
      */
     public function getProjectParts(string $host): array
     {
-        if(!str_ends_with($host, $this->rahHostname)) {
+        if (!str_ends_with($host, $this->rahHostname)) {
             throw new RuntimeException('base domain mismatch: ' . $host . ' does not end with .' . $this->rahHostname);
         }
+
         $part = str_replace($this->rahHostname, '', $host);
         $part = trim($part, '.');
         if (str_contains($part, '.')) {
             throw new RuntimeException('Invalid project name: ' . $part);
         }
+
         [$projectName, $deploymentName] = explode('--', $part . '--', 3);
         return [
             $projectName,
@@ -79,6 +81,7 @@ final readonly class ProjectService
         if (!$this->filesystem->exists($path)) {
             throw new NotFoundHttpException('Project not found: ' . $name);
         }
+
         $url = $this->urlService->getUrl($name);
         $size = $this->fileSizeService->getDirectorySize($path);
 
@@ -109,5 +112,4 @@ final readonly class ProjectService
 
         return $this->deploymentService->load($project->reload(), $settings->deployment);
     }
-
 }

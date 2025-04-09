@@ -8,19 +8,18 @@ use App\Service\DeploymentService;
 use App\Service\ProjectService;
 use JsonSerializable;
 
-
-final class Project implements JsonSerializable
+final readonly class Project implements JsonSerializable
 {
     /** @var array<string, Deployment> */
-    public readonly array $deployments;
+    public array $deployments;
 
     public function __construct(
-        public readonly string $name,
-        public readonly Size $size,
-        public readonly string $path,
-        public readonly string $url,
-        private readonly ProjectService $projectService,
-        private readonly DeploymentService $deploymentService,
+        public string $name,
+        public Size $size,
+        public string $path,
+        public string $url,
+        private ProjectService $projectService,
+        private DeploymentService $deploymentService,
     ) {
         $this->deployments = $this->deploymentService->loadForProject($this);
     }
@@ -39,6 +38,7 @@ final class Project implements JsonSerializable
         foreach ($this->deployments as $deployment) {
             $deployments[$deployment->name] = $deployment->getData();
         }
+
         return [
             ...(array)$this,
             'deployments' => $deployments,

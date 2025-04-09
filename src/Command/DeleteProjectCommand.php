@@ -18,7 +18,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class DeleteProjectCommand extends Command
 {
-
     protected function configure(): void
     {
         $this

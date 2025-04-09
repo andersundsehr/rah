@@ -23,7 +23,9 @@ use const PATHINFO_EXTENSION;
 
 final class FallbackController extends AbstractController
 {
-    public function __construct(private readonly ProjectService $projectService) {}
+    public function __construct(private readonly ProjectService $projectService)
+    {
+    }
 
     #[Route('/{catchall}', name: 'app_fallback', requirements: ['catchall' => '.+'], priority: -100)]
     public function show(Request $request): Response
@@ -46,20 +48,19 @@ final class FallbackController extends AbstractController
             $directory . '/index.html',
             $directory . '/index.htm',
         ];
-        if ($uri) {
-            if (is_dir($directory . $uri)) {
-                if (!str_ends_with($uri, '/')) {
-                    return $this->redirect($request->getSchemeAndHttpHost() . '/' . $uri . '/');
-                }
-            }
+        if ($uri && is_dir($directory . $uri) && !str_ends_with($uri, '/')) {
+            return $this->redirect($request->getSchemeAndHttpHost() . '/' . $uri . '/');
         }
+
         foreach ($tryFiles as $filename) {
             if (!file_exists($filename)) {
                 continue;
             }
+
             if (is_dir($filename)) {
                 return $this->listDirectory($filename, $request, $uri, $directory);
             }
+
             if (is_file($filename)) {
                 $binaryFileResponse = new BinaryFileResponse($filename);
 
@@ -72,6 +73,7 @@ final class FallbackController extends AbstractController
                 return $binaryFileResponse;
             }
         }
+
         return $this->json([
             'code' => 404,
             'message' => 'Not Found',
@@ -100,10 +102,12 @@ CSS;
         if ($dirname) {
             $html .= '<li style="padding: 5px;"><a href="' . $request->getSchemeAndHttpHost() . '/' . $dirname . '/">' . ($dirname === '.' ? '. &lt;parent>' : $dirname) . '</a></li>';
         }
+
         foreach ($files as $file) {
             $uriPath = $uri . $file->getBasename();
             $html .= '<li style="padding: 5px;"><a href="' . $request->getSchemeAndHttpHost() . '/' . $uriPath . '">' . $uriPath . ($file->isDir() ? '/' : '') . '</a></li>';
         }
+
         $html .= '</ul>';
         $html .= '</body></html>';
         return new Response($html, 200, [

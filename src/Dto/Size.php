@@ -22,6 +22,7 @@ final readonly class Size
             $size /= 1024;
             $i++;
         }
+
         return round($size, 2) . ' ' . $units[$i];
     }
 }

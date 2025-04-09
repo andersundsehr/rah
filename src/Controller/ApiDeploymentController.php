@@ -28,17 +28,17 @@ final class ApiDeploymentController extends AbstractController
         private readonly ZipService $zipService,
         private readonly Filesystem $filesystem,
         private readonly ProjectService $projectService,
-    ) {}
+    ) {
+    }
 
     #[Route('/api/deployment', name: 'app_api_deployment_delete', methods: ['DELETE'])]
     #[Route('/api/deployment:delete', name: 'app_api_deployment_delete_get', methods: ['GET'])]
     public function delete(
         #[MapQueryString] Settings $settings
-    ): JsonResponse
-    {
+    ): JsonResponse {
         try {
             $deployment = $this->projectService->loadDeploymentFromSettings($settings);
-        } catch (NotFoundHttpException){
+        } catch (NotFoundHttpException) {
             return $this->json([
                 'status' => 'ok',
                 'message' => 'already deleted',
@@ -98,6 +98,4 @@ final class ApiDeploymentController extends AbstractController
             'Location' => $deployment->url,
         ]);
     }
-
-
 }

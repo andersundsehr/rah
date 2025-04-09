@@ -14,7 +14,8 @@ final readonly class Deployment
         public string $name,
         public Size $size,
         public string $url,
-    ) {}
+    ) {
+    }
 
 
     public function reload(): Deployment

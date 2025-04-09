@@ -18,8 +18,9 @@ final class DashboardController extends AbstractController
     public function __construct(
         private readonly ProjectService $projectService,
         #[Autowire(env: 'RAH_HOSTNAME')]
-        private string $rahHostname,
-    ) {}
+        private readonly string $rahHostname,
+    ) {
+    }
 
     #[Route('/', name: 'app_dashboard')]
     public function index(Request $request): Response
@@ -46,7 +47,7 @@ final class DashboardController extends AbstractController
         $statusCode = 200;
 
         if ($deploymentName) {
-           $response = $this->forward('App\Controller\FallbackController::show');
+            $response = $this->forward(FallbackController::class . '::show');
 
             if ($response->getStatusCode() !== 404) {
                 return $response;

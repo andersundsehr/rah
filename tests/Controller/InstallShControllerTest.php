@@ -20,14 +20,14 @@ class InstallShControllerTest extends RahWebTestCase
 
     public function testDiffrentDomain(): void
     {
-        $this->client->request('GET', '/install.sh', [],[], ['HTTP_HOST' => 'sub.test.localhost']);
+        $this->client->request('GET', '/install.sh', [], [], ['HTTP_HOST' => 'sub.test.localhost']);
 
         self::assertResponseStatusCodeSame(404);
     }
 
     public function testWrongDomain(): void
     {
-        $this->client->request('GET', '/install.sh', [],[], ['HTTP_HOST' => 'not-localhost']);
+        $this->client->request('GET', '/install.sh', [], [], ['HTTP_HOST' => 'not-localhost']);
 
         self::assertResponseStatusCodeSame(500);
         $content = (string)$this->client->getResponse()->getContent();

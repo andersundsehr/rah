@@ -17,7 +17,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class DeleteDeploymentCommand extends Command
 {
-
     protected function configure(): void
     {
         $this

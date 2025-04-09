@@ -8,16 +8,15 @@ use App\Dto\Deployment;
 use App\Dto\Project;
 use Symfony\Component\Finder\Finder;
 
-
 final readonly class DeploymentService
 {
     public function __construct(
         private UrlService $urlService,
         private FileSizeService $fileSizeService,
-    ) {}
+    ) {
+    }
 
     /**
-     * @param Project $project
      * @return array<string, Deployment>
      */
     public function loadForProject(Project $project): array
@@ -27,6 +26,7 @@ final readonly class DeploymentService
             $deploymentName = $directory->getBasename();
             $deployments[$deploymentName] = $this->load($project, $deploymentName);
         }
+
         return $deployments;
     }
 
