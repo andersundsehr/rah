@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
+use DateTimeImmutable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 final readonly class Deployment
@@ -14,6 +15,7 @@ final readonly class Deployment
         public string $name,
         public Size $size,
         public string $url,
+        public DateTimeImmutable $lastUpdate,
     ) {
     }
 

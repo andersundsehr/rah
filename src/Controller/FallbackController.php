@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,8 +24,11 @@ use const PATHINFO_EXTENSION;
 
 final class FallbackController extends AbstractController
 {
-    public function __construct(private readonly ProjectService $projectService)
-    {
+    public function __construct(
+        private readonly ProjectService $projectService,
+        #[Autowire(env: 'RAH_STORAGE_PATH')]
+        private readonly string $storagePath,
+    ) {
     }
 
     #[Route('/{catchall}', name: 'app_fallback', requirements: ['catchall' => '.+'], priority: -100)]
@@ -38,7 +42,7 @@ final class FallbackController extends AbstractController
 
         $directory = '/app/public/';
         if ($projectName && $deploymentName) {
-            $directory = '/storage/' . $projectName . '/' . $deploymentName . '/';
+            $directory = $this->storagePath . '/' . $projectName . '/' . $deploymentName . '/';
         }
 
         $tryFiles = [

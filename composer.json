@@ -19,6 +19,7 @@
     "symfony/property-info": "~7.2.5",
     "symfony/runtime": "~7.2.3",
     "symfony/serializer": "~7.2.5",
+    "symfony/twig-bundle": "~7.2.0",
     "symfony/validator": "~7.2.5",
     "symfony/yaml": "~7.2.5",
     "thecodingmachine/safe": ">=3.0.2"

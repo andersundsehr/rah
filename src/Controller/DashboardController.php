@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\ProjectService;
+use App\Service\UrlService;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -19,6 +20,7 @@ final class DashboardController extends AbstractController
         private readonly ProjectService $projectService,
         #[Autowire(env: 'RAH_HOSTNAME')]
         private readonly string $rahHostname,
+        private readonly UrlService $urlService,
     ) {
     }
 
@@ -34,9 +36,9 @@ final class DashboardController extends AbstractController
 
     private function dashboard(): Response
     {
-        return $this->json([
-            'status' => 'TODO add nice Dashboard',
-            'projects' => $this->projectService->loadAll(), // TODO add nice Dashboard
+        return $this->render('dashboard.html.twig', [
+            'projects' => $this->projectService->loadAll(),
+            'diskUsage' => $this->projectService->getDiskUsage(),
         ]);
     }
 
@@ -65,9 +67,12 @@ final class DashboardController extends AbstractController
             return $response;
         }
 
-        return $this->json([
-            'status' => 'TODO add nice Dashboard',
-            'project' => $project, // TODO add nice Dashboard
-        ], $statusCode);
+        $response = $this->render('dashboard-project.html.twig', [
+            'dashboardUrl' => $this->urlService->getUrl(),
+            'project' => $project,
+            'diskUsage' => $this->projectService->getDiskUsage(),
+        ]);
+        $response->setStatusCode($statusCode);
+        return $response;
     }
 }

@@ -11,7 +11,7 @@
 .env
 vendor/
 storage/
-rah_GNkpJl.zip rah_dIhpAF.zip
+storage-root/
 .idea/
 
 ###> symfony/phpunit-bridge ###

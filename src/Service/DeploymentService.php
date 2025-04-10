@@ -6,7 +6,10 @@ namespace App\Service;
 
 use App\Dto\Deployment;
 use App\Dto\Project;
+use Safe\DateTimeImmutable;
 use Symfony\Component\Finder\Finder;
+
+use function Safe\filemtime;
 
 final readonly class DeploymentService
 {
@@ -36,6 +39,9 @@ final readonly class DeploymentService
         $path = $project->path . '/' . $name;
         $url = $this->urlService->getUrl($project->name . '--' . $name);
         $size = $this->fileSizeService->getDirectorySize($path);
-        return new Deployment($project, $path, $name, $size, $url);
+
+        $lastUpdate = new DateTimeImmutable('@' . filemtime($path));
+
+        return new Deployment($project, $path, $name, $size, $url, $lastUpdate);
     }
 }

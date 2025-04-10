@@ -174,3 +174,14 @@ docker compose exec --user 1000:1000 rah composer test
 ```
 
 The HTML report will be available in the `build/coverage` directory. Open `build/coverage/index.html` in a web browser to view detailed coverage information.
+
+
+###### TODO
+
+- rah binary with build in php
+- docker build
+- add cronjob for background deletions of old deployments
+
+- defaultDeployment remove/or implement
+- deleteIfMissingMr remove/or implement
+- deleteIfMissingBranch remove/or implement

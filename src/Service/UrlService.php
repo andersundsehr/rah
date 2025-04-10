@@ -17,7 +17,7 @@ final readonly class UrlService
     ) {
     }
 
-    public function getUrl(string $subdomain): string
+    public function getUrl(?string $subdomain = null): string
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
@@ -31,6 +31,10 @@ final readonly class UrlService
 
         if ($request->getScheme() === 'https' && $portPart === ':443') {
             $portPart = '';
+        }
+
+        if (!$subdomain) {
+            return $request->getScheme() . '://' . $this->rahHostname . $portPart;
         }
 
         return $request->getScheme() . '://' . $subdomain . '.' . $this->rahHostname . $portPart;

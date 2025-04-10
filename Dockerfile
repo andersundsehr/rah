@@ -5,3 +5,5 @@ COPY . /app/
 WORKDIR /app
 ENV WEB_DOCUMENT_ROOT=/app/public \
     RAH_STORAGE_PATH=/storage
+
+VOLUME /storage

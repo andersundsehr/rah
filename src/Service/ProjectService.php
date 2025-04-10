@@ -17,7 +17,10 @@ use function explode;
 use function str_contains;
 use function str_ends_with;
 use function str_replace;
+use function str_starts_with;
 use function trim;
+use function Safe\shell_exec;
+use function Safe\preg_split;
 
 final readonly class ProjectService
 {
@@ -31,6 +34,9 @@ final readonly class ProjectService
         #[Autowire(env: 'RAH_HOSTNAME')]
         private string $rahHostname,
     ) {
+        if (!str_starts_with($this->storagePath, '/')) {
+            throw new RuntimeException('RAH_STORAGE_PATH should be an absolute path');
+        }
     }
 
     /**
@@ -111,5 +117,32 @@ final readonly class ProjectService
         $this->filesystem->mkdir($project->path . '/' . $settings->deployment);
 
         return $this->deploymentService->load($project->reload(), $settings->deployment);
+    }
+
+    /**
+     * @return array{percent: float, free: string}
+     */
+    public function getDiskUsage(): array
+    {
+        $ex = shell_exec('df -h ' . escapeshellarg($this->storagePath) . ' 2>&1');
+        if ($ex === null) {
+            throw new RuntimeException('Could not get disk usage');
+        }
+
+        $lines = explode("\n", $ex);
+        if (count($lines) < 2) {
+            throw new RuntimeException('Could not get disk usage');
+        }
+
+        $line = $lines[1];
+        $parts = preg_split('/\s+/', $line);
+        if (count($parts) < 5) {
+            throw new RuntimeException('Could not get disk usage');
+        }
+
+        return [
+            'percent' => $parts[4],
+            'free' => $parts[3],
+        ];
     }
 }
