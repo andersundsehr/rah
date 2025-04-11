@@ -5,10 +5,8 @@
     <title>{% block title %}Welcome!{% endblock %}</title>
     <link rel="icon" href="/.rah/favicon.svg">
     {% block stylesheets %}
-        <link rel="stylesheet" href="/.rah/css/dashboard.css">
-    {% endblock %}
-
-    {% block javascripts %}
+      <link rel="stylesheet" href="/.rah/css/dashboard.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css">
     {% endblock %}
   </head>
   <body class="body">
@@ -16,8 +14,16 @@
 
     {% block footer %}
       <footer class="footer">
-        <p class="footer__text">Total Disk Usage: {{ diskUsage.percent }} <br>Free Space: {{ diskUsage.free }}</p>
-    </footer>
+        <p class="footer__text">Total Disk Usage: {{ diskUsage.percent }} <br>Free Space: {{ diskUsage.free }}<br><br>
+          HowToUse:
+        </p>
+        <pre class="code-block language-bash" tabindex="0"><code class="language-bash" id="foo"><span class="token builtin class-name">source</span> <span
+              class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token function">curl</span> <span
+              class="token parameter variable">-sSL</span> <a class=link href="{{ dashboardUrl }}/install.sh">{{ dashboardUrl }}/install.sh</a><span class="token punctuation">)</span>
+<span class="token builtin class-name">rah upload</span> dist/public/ <span class="token builtin class-name">.</span>
+<span class="token builtin class-name">rah append</span> .playwright/report/ .playwright/
+</code></pre>
+      </footer>
     {% endblock %}
   </body>
 </html>

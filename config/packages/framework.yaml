@@ -5,6 +5,7 @@ framework:
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
+    trusted_proxies: 'private_ranges'
 #    error_controller: App\Controller\FallbackController::show
     #esi: true
     #fragments: true

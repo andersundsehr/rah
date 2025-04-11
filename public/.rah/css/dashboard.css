@@ -91,7 +91,7 @@
 
 .badge {
   position: absolute;
-  top: 10px;
+  top: -13px;
   right: 10px;
   background-color: light-dark(var(--theme-color-light), var(--theme-color-dark));
   color: light-dark(var(--bg-light), var(--bg-dark));
@@ -129,4 +129,10 @@
 .button--back-icon {
   height: 1em;
   vertical-align: text-top;
+}
+
+
+.code-block {
+  display: inline-block;
+  margin: 0 auto;
 }

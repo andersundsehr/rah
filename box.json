@@ -1,0 +1,18 @@
+{
+  "main": "rah.php",
+  "chmod": "0775",
+  "compression": "GZ",
+  "banner": [
+    "This file is part of the rah project.",
+    "",
+    "(c) Matthias Vogel <m.vogel@andersundsehr.com>",
+    "",
+    "This source file is subject to the MIT license that is bundled",
+    "with this source code in the file LICENSE."
+  ],
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Json",
+    "KevinGH\\Box\\Compactor\\Php"
+  ],
+  "git-version": "dev_version"
+}

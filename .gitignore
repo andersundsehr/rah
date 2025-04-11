@@ -23,4 +23,15 @@ storage-root/
 /phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
-build/
+build/coverage/
+build/buildroot
+build/downloads
+build/pkgroot
+build/source
+build/micro.sfx
+build/php
+build/spc
+
+
+public/.rah/rah
+rah.phar

@@ -1,5 +1,5 @@
 <span class="badge">{{ project.size.humanReadable }}</span>
-<table>
+<table width="100%">
   <thead>
   <tr>
     <th style="width: 45%">name</th>
@@ -11,10 +11,10 @@
   <tbody>
   {% for deployment in project.deployments %}
     <tr>
-      <td><a href="{{ deployment.url }}" class="link">{{ deployment.name }}</a></td>
-      <td>{{ deployment.size.humanReadable }}</td>
-      <td>{{ deployment.lastUpdate|date('d.m.Y') }}</td>
-      <td>{{ deployment.lastUpdate|date('H:i A') }}</td>
+      <td class="table__cell"><a href="{{ deployment.url }}" class="link">{{ deployment.name }}</a></td>
+      <td class="table__cell">{{ deployment.size.humanReadable }}</td>
+      <td class="table__cell">{{ deployment.lastUpdate|date('d.m.Y') }}</td>
+      <td class="table__cell">{{ deployment.lastUpdate|date('H:i A') }}</td>
     </tr>
   {% endfor %}
   </tbody>

@@ -1,13 +1,22 @@
 #!/usr/bin/env bash
 
 export RAH_API=###RAH_API###
+RAH_AVAILALBE=###RAH_AVAILALBE###
 
 
-# if command rah is found return
+# Check if rah is already installed
 if command -v rah &> /dev/null
 then
-    echo "rah already installed (only set RAH_API=$RAH_API)"
-    return 0
+    echo "rah is already installed"
+    # Check if current version matches the available version
+    if rah version-check "$RAH_AVAILALBE" &> /dev/null; then
+        echo "rah is already at the latest version $RAH_AVAILALBE"
+        echo "Only setting RAH_API=$RAH_API"
+        return 0
+    else
+        echo "your version is older"
+        echo "Updating rah to version $RAH_AVAILALBE"
+    fi
 fi
 
 if [ ! -d ~/bin ]; then

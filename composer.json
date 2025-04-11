@@ -1,4 +1,5 @@
 {
+  "name": "andersundsehr/rah",
   "license": "proprietary",
   "type": "project",
   "require": {
@@ -6,7 +7,6 @@
     "ext-ctype": "*",
     "ext-iconv": "*",
     "ext-zip": "*",
-    "phpdocumentor/reflection-docblock": "^5.6.1",
     "phpstan/phpdoc-parser": "^2.1",
     "symfony/console": "~7.2.5",
     "symfony/dotenv": "~7.2.0",

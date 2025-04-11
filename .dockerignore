@@ -1,0 +1,14 @@
+var
+vendor
+storage
+storage-root
+.idea
+build/buildroot
+build/downloads
+build/pkgroot
+build/source
+build/coverage
+build/spc
+compose.yml
+.phpunit.result.cache
+.env.local

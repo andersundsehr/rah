@@ -87,7 +87,6 @@ services:
     environment:
       # RAH_API_KEY is generated and placed in rah/.env + it is printed in the docker log on startup
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
-      RAH_PORT: ${RAH_PORT:-80}
       RAH_STORAGE_PATH: '/storage'
       # allows access to all deployments if client has ip from list
       RAH_AUTH_IPS: "213.61.68.122,127.0.0.1"
@@ -178,10 +177,13 @@ The HTML report will be available in the `build/coverage` directory. Open `build
 
 ###### TODO
 
-- rah binary with build in php
-- docker build
-- add cronjob for background deletions of old deployments
-
-- defaultDeployment remove/or implement
-- deleteIfMissingMr remove/or implement
-- deleteIfMissingBranch remove/or implement
+- needed:
+  - RAH_AUTH_IPS
+  - RAH_BASIC_AUTH
+  - CI build
+- if the time is good:
+  - add cronjob for background deletions of old deployments
+- maybe:
+  - defaultDeployment remove/or implement
+  - deleteIfMissingMr remove/or implement
+  - deleteIfMissingBranch remove/or implement

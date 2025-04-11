@@ -1,0 +1,16 @@
+services:
+  rah:
+    image: andersundsehr/rah:latest
+    init: true
+    volumes:
+      - storage:/storage
+    environment:
+      RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
+      # allows access to all deployments if client has ip from list
+      RAH_AUTH_IPS: "213.61.68.122,127.0.0.1"
+      # allows access to all deployments if client uses this auth
+      RAH_BASIC_AUTH: "rah:rah"
+    ports:
+      - "3333:80"
+volumes:
+  storage:

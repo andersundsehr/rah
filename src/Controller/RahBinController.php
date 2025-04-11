@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,11 @@ final class RahBinController extends AbstractController
             return $this->forward(FallbackController::class . '::show');
         }
 
-        // TODO change location to the builded rah with php included
-        return $this->file(__DIR__ . '/../../rah', 'rah');
+        $file = '/../../public/.rah/rah';
+        if (!is_file(__DIR__ . $file)) {
+            throw new RuntimeException('rah file not found did you build it locally?');
+        }
+
+        return $this->file(__DIR__ . $file, 'rah');
     }
 }
