@@ -10,6 +10,7 @@ use Safe\DateTimeImmutable;
 use Symfony\Component\Finder\Finder;
 
 use function Safe\filemtime;
+use function uasort;
 
 final readonly class DeploymentService
 {
@@ -29,6 +30,8 @@ final readonly class DeploymentService
             $deploymentName = $directory->getBasename();
             $deployments[$deploymentName] = $this->load($project, $deploymentName);
         }
+
+        uasort($deployments, static fn(Deployment $a, Deployment $b): int => $b->lastUpdate <=> $a->lastUpdate);
 
         return $deployments;
     }

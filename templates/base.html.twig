@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="/.rah/favicon.svg">
-        {% block stylesheets %}
-            <link rel="stylesheet" href="/.rah/css/dashboard.css">
-        {% endblock %}
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" href="/.rah/favicon.svg">
+    {% block stylesheets %}
+        <link rel="stylesheet" href="/.rah/css/dashboard.css">
+    {% endblock %}
 
-        {% block javascripts %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        <footer>
-            <p>Total Disk Usage: {{ diskUsage.percent }} <br>Free Space: {{ diskUsage.free }}</p>
-        </footer>
-    </body>
+    {% block javascripts %}
+    {% endblock %}
+  </head>
+  <body class="body">
+    {% block body %}{% endblock %}
+
+    {% block footer %}
+      <footer class="footer">
+        <p class="footer__text">Total Disk Usage: {{ diskUsage.percent }} <br>Free Space: {{ diskUsage.free }}</p>
+    </footer>
+    {% endblock %}
+  </body>
 </html>

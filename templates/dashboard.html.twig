@@ -2,36 +2,22 @@
 
 {% block title %}RAH Projects {% endblock %}
 
-
 {% block body %}
-    <header>
-        <h1><img src="/.rah/favicon.svg" alt="Logo" style="height: 1em;"><br> Projects</h1>
-    </header>
+  <header>
+    <h1 class="header__title">
+      <a href="{{ dashboardUrl }}" class="header__title">
+        <img src="/.rah/favicon.svg" alt="Logo" style="height: 1em;"><br>
+        Projects
+      </a>
+    </h1>
+  </header>
 
-    <ul>
-        {% for project in projects %}
-            <li>
-                <a href="{{project.url}}">{{ project.name }}</a>
-                <span class="badge">{{ project.size.humanReadable }}</span>
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="50%">name</th>
-                            <th>size</th>
-                            <th>date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for deployment in project.deployments %}
-                        <tr>
-                            <td><a href="{{ deployment.url }}">{{ deployment.name }}</a></td>
-                            <td>{{ deployment.size.humanReadable }}</td>
-                            <td>{{ deployment.lastUpdate|date('d.m.Y') }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </li>
-        {% endfor %}
-    </ul>
+  <ul class="list">
+    {% for project in projects %}
+      <li class="list__item">
+        <a href="{{ project.url }}" class="link">{{ project.name }}</a>
+        {% include 'partials/project-card.html.twig' %}
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}

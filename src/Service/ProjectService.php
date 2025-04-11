@@ -77,6 +77,8 @@ final readonly class ProjectService
             $projects[$projectName] = $this->load($projectName);
         }
 
+        uasort($projects, fn(Project $a, Project $b): int => $b->lastUpdate <=> $a->lastUpdate);
+
         return $projects;
     }
 

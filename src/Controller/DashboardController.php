@@ -37,6 +37,7 @@ final class DashboardController extends AbstractController
     private function dashboard(): Response
     {
         return $this->render('dashboard.html.twig', [
+            'dashboardUrl' => $this->urlService->getUrl(),
             'projects' => $this->projectService->loadAll(),
             'diskUsage' => $this->projectService->getDiskUsage(),
         ]);

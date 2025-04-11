@@ -35,6 +35,7 @@ final readonly class ZipService
                 'override' => true,
                 'delete' => !$append,
             ]);
+            $this->filesystem->touch($path);
         } finally {
             $this->filesystem->remove($tempExtractionFolder);
         }

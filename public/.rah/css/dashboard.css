@@ -1,106 +1,132 @@
-body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #121212;
-    color: #e0e0e0;
+/* BEM (Block Element Modifier) is a methodology that helps create reusable and maintainable code by following a strict naming convention.
+   - Block: Represents a standalone entity that is meaningful on its own (e.g., .list, .header).
+   - Element: Represents a part of a block and has no standalone meaning (e.g., .list__item, .header__title).
+   - Modifier: Represents a different state or version of a block or element (e.g., .list__item--strong, .button--back:hover). */
+
+/* Refactored CSS using BEM technique */
+
+/*
+* the light theme color is #ffeb3b
+* the dark theme color is #f702ff
+*/
+
+:root {
+  color-scheme: light dark;
+  --theme-color-light: #de02e6;
+  --theme-color-dark: #ffeb3b;
+  --bg-light: #ffffff;
+  --bg-dark: #121212;
+  --text-light: #000000;
+  --text-dark: #e0e0e0;
 }
 
-h1 {
-    text-align: center;
-    color: #ffeb3b;
-    margin-top: 20px;
+.body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: light-dark(var(--bg-light), var(--bg-dark));
+  color: light-dark(var(--text-light), var(--text-dark));
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+.header__title {
+  text-align: center;
+  color: light-dark(var(--theme-color-light), var(--theme-color-dark));
+  margin-top: 20px;
 }
 
-li {
-    position: relative;
-    background: #1e1e1e;
-    margin: 10px auto;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    max-width: 600px;
+.list {
+  list-style-type: none;
+  padding: 0;
 }
 
-li strong {
-    font-size: 1.2em;
-    color: #ffeb3b;
+.list__item {
+  position: relative;
+  background: light-dark(#f0f0f0, #1e1e1e);
+  margin: 10px auto;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: light-dark(0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.5));
+  max-width: 600px;
 }
 
-li ul {
-    margin-top: 10px;
+.list__item--strong {
+  font-size: 1.2em;
+  color: light-dark(var(--theme-color-light), var(--theme-color-dark));
 }
 
-li ul li {
-    background: none;
-    padding: 5px 0;
-    box-shadow: none;
+.list__sublist {
+  margin-top: 10px;
 }
 
-a {
-    color: #ffeb3b;
-    text-decoration: none;
+.list__sublist-item {
+  background: none;
+  padding: 5px 0;
+  box-shadow: none;
 }
 
-a:hover {
-    text-decoration: underline;
+.link {
+  color: light-dark(var(--theme-color-light), var(--theme-color-dark));
+  text-decoration: none;
 }
 
-footer {
-    background-color: #1e1e1e;
-    color: #ffeb3b;
-    text-align: center;
-    padding: 10px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.5);
-    font-size: 0.9em;
+.link:hover {
+  text-decoration: underline;
 }
 
-footer p {
-    margin: 0;
+.footer {
+  background-color: light-dark(#f0f0f0, #1e1e1e);
+  color: light-dark(var(--text-light), var(--theme-color-dark));
+  text-align: center;
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-shadow: light-dark(0 -2px 4px rgba(0, 0, 0, 0.1), 0 -2px 4px rgba(0, 0, 0, 0.5));
+  font-size: 0.9em;
+}
+
+.footer__text {
+  margin: 0;
 }
 
 .badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #ffeb3b;
-    color: #1e1e1e;
-    padding: 5px 10px;
-    border-radius: 12px;
-    font-size: 0.9em;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: light-dark(var(--theme-color-light), var(--theme-color-dark));
+  color: light-dark(var(--bg-light), var(--bg-dark));
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.9em;
+  font-weight: bold;
+  box-shadow: light-dark(0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
-td, th {
-    padding:5px 15px;
+.table__cell {
+  padding: 5px 15px;
 }
 
-.back-button {
-    background-color: #ffeb3b;
-    color: #1e1e1e;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    text-decoration: none;
-
-    position: absolute;
-    padding: 5px 10px;
-    top: 10px;
-    left: 10px;
+.button--back {
+  background-color: light-dark(var(--text-light), var(--theme-color-light));
+  color: light-dark(var(--theme-color-dark), var(--bg-light));
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 20px;
+  text-decoration: none;
+  position: absolute;
+  padding: 5px 10px;
+  top: 10px;
+  left: 10px;
 }
 
-.back-button:hover {
-    background-color: #70fa00;
-    color: #1e1e1e;
-    text-decoration: none;
+.button--back:hover {
+  background-color: light-dark(var(--theme-color-light), var(--theme-color-dark));
+  color: light-dark(var(--text-light), var(--bg-light));
+  text-decoration: none;
+}
+
+.button--back-icon {
+  height: 1em;
+  vertical-align: text-top;
 }

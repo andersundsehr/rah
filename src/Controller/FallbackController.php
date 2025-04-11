@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\ProjectService;
+use App\Service\UrlService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Finder\Finder;
@@ -13,12 +14,14 @@ use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Attribute\Route;
 
 use function dirname;
+use function explode;
 use function file_exists;
 use function is_dir;
 use function is_file;
 use function pathinfo;
 use function str_ends_with;
 use function str_replace;
+use function trim;
 
 use const PATHINFO_EXTENSION;
 
@@ -28,6 +31,7 @@ final class FallbackController extends AbstractController
         private readonly ProjectService $projectService,
         #[Autowire(env: 'RAH_STORAGE_PATH')]
         private readonly string $storagePath,
+        private readonly UrlService $urlService,
     ) {
     }
 
@@ -62,7 +66,7 @@ final class FallbackController extends AbstractController
             }
 
             if (is_dir($filename)) {
-                return $this->listDirectory($filename, $request, $uri, $directory);
+                return $this->listDirectory($filename, $directory);
             }
 
             if (is_file($filename)) {
@@ -84,38 +88,49 @@ final class FallbackController extends AbstractController
         ], 404);
     }
 
-    private function listDirectory(string $filename, Request $request, string $uri, string $directory): Response
+    private function listDirectory(string $filename, string $rootDir): Response
     {
+        $directory = '/' . str_replace($rootDir, '', $filename);
+
+        $breadcrumbs = [];
+        $parts = explode('/', trim($directory, '/'));
+        $path = '';
+        foreach ($parts as $part) {
+            $path .= '/' . $part;
+            $breadcrumbs[] = [
+                'uri' => $path,
+                'name' => $part,
+            ];
+        }
+
         $finder = new Finder();
         $files = $finder->in($filename)->depth('0')->sortByName()->sortByType();
 
-        $css = <<<CSS
-:root {
-  color-scheme: light dark;
-  padding: 20px;
-}
-
-CSS;
-
-        $html = '<!DOCTYPE html>';
-        $html .= '<html><body>';
-        $html .= '<style>' . $css . '</style>';
-        $html .= '<h1>Index of ' . str_replace($directory, '', $filename) . '</h1>';
-        $html .= '<ul>';
-        $dirname = dirname($uri);
-        if ($dirname) {
-            $html .= '<li style="padding: 5px;"><a href="' . $request->getSchemeAndHttpHost() . '/' . $dirname . '/">' . ($dirname === '.' ? '. &lt;parent>' : $dirname) . '</a></li>';
+        $trim = trim($directory, '/');
+        $baseUrl = '/' . ($trim ? ($trim . '/') : '');
+        $listing = [];
+        if ($directory !== '/') {
+            $listing[] = [
+                'uri' => $baseUrl . '..',
+                'name' => '.. 👪',
+                'type' => 'dir',
+            ];
         }
 
         foreach ($files as $file) {
-            $uriPath = $uri . $file->getBasename();
-            $html .= '<li style="padding: 5px;"><a href="' . $request->getSchemeAndHttpHost() . '/' . $uriPath . '">' . $uriPath . ($file->isDir() ? '/' : '') . '</a></li>';
+            $listing[] = [
+                'uri' => $baseUrl . $file->getFilename() . ($file->isDir() ? '/' : ''),
+                'name' => $file->getFilename() . ($file->isDir() ? '/' : ''),
+                'type' => $file->isDir() ? 'dir' : 'file',
+            ];
         }
 
-        $html .= '</ul>';
-        $html .= '</body></html>';
-        return new Response($html, 200, [
-            'Content-Type' => 'text/html',
+        return $this->render('directory-listing.html.twig', [
+            'directory' => $directory,
+            'listing' => $listing,
+            'breadcrumbs' => $breadcrumbs,
+            'dashboardUrl' => $this->urlService->getUrl(),
+            'diskUsage' => $this->projectService->getDiskUsage(),
         ]);
     }
 }

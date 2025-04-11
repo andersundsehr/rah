@@ -6,12 +6,15 @@ namespace App\Dto;
 
 use App\Service\DeploymentService;
 use App\Service\ProjectService;
+use DateTimeImmutable;
 use JsonSerializable;
 
 final readonly class Project implements JsonSerializable
 {
     /** @var array<string, Deployment> */
     public array $deployments;
+
+    public ?DateTimeImmutable $lastUpdate;
 
     public function __construct(
         public string $name,
@@ -22,6 +25,14 @@ final readonly class Project implements JsonSerializable
         private DeploymentService $deploymentService,
     ) {
         $this->deployments = $this->deploymentService->loadForProject($this);
+        $lastUpdate = null;
+        foreach ($this->deployments as $deployment) {
+            if ($lastUpdate === null || $deployment->lastUpdate > $lastUpdate) {
+                $lastUpdate = $deployment->lastUpdate;
+            }
+        }
+
+        $this->lastUpdate = $lastUpdate;
     }
 
     public function reload(): self
