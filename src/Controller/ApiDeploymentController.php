@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
+use function fclose;
 use function ltrim;
 use function str_replace;
 use function stream_copy_to_stream;
@@ -80,7 +81,13 @@ final class ApiDeploymentController extends AbstractController
 
         try {
             // write $zipFile stream to file named $zipFileName
-            $this->filesystem->copy('php://input', $zipFileName);
+            $this->filesystem->mkdir(\dirname($zipFileName));
+
+            $input = fopen('php://input', 'rb');
+            $zipFile = fopen($zipFileName, 'wb+');
+            stream_copy_to_stream($input, $zipFile);
+            fclose($input);
+            fclose($zipFile);
 
             $this->zipService->unzip($zipFileName, $deployment->path . '/' . $destination, $append);
         } finally {

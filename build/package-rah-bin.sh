@@ -9,8 +9,7 @@ if [ ! -f spc ]; then
   chmod +x spc
 fi
 
-STANDARD_EXTENSIONS=exif,iconv,mbstring,phar,sockets,zlib,tokenizer
-EXTENSIONS=pcntl,ctype,zip,xml,$STANDARD_EXTENSIONS
+EXTENSIONS=pcntl,ctype,zip,xml,exif,iconv,mbstring,phar,sockets,zlib,tokenizer,filter,openssl,curl
 
 ./spc doctor --auto-fix
 ./spc install-pkg upx

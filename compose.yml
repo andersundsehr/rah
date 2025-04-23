@@ -26,9 +26,9 @@ services:
       WEB_DOCUMENT_ROOT: $PWD/public
       RAH_STORAGE_PATH: ${RAH_STORAGE_PATH:-/storage}
       # allows access to all deployments if client has ip from list
-      RAH_AUTH_IPS: "213.61.68.122,127.0.0.1"
+      RAH_AUTH_IPS: "213.61.68.122,private_ranges"
       # allows access to all deployments if client uses this auth
-      RAH_BASIC_AUTH: "rah:rah"
+      RAH_BASIC_AUTH: "rah:passRah,customer:passCustomer"
 
        # open phpstorm from inside the container on Windows:
       PATH: $PATH

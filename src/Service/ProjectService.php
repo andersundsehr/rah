@@ -14,13 +14,15 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function explode;
+use function json_encode;
 use function str_contains;
 use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
 use function trim;
-use function Safe\shell_exec;
-use function Safe\preg_split;
+
+use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 
 final readonly class ProjectService
 {
@@ -93,14 +95,13 @@ final readonly class ProjectService
         $url = $this->urlService->getUrl($name);
         $size = $this->fileSizeService->getDirectorySize($path);
 
-        // TODO load project.json
-
         return new Project($name, $size, $path, $url, $this, $this->deploymentService);
     }
 
     public function create(string $projectName): Project
     {
         $this->filesystem->mkdir($this->storagePath . '/' . $projectName);
+        $this->filesystem->touch($this->storagePath . '/' . $projectName);
 
         return $this->load($projectName);
     }
@@ -117,34 +118,16 @@ final readonly class ProjectService
         $project = $this->create($settings->projectName);
 
         $this->filesystem->mkdir($project->path . '/' . $settings->deployment);
+        $this->filesystem->touch($project->path . '/' . $settings->deployment);
+
+        $content = json_encode($settings, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $this->filesystem->dumpFile($project->path . '/' . $settings->deployment . '/deployment.json', $content);
 
         return $this->deploymentService->load($project->reload(), $settings->deployment);
     }
 
-    /**
-     * @return array{percent: float, free: string}
-     */
-    public function getDiskUsage(): array
+    public function deleteDeployment(Deployment $deploymentToDelete): void
     {
-        $ex = shell_exec('df -h ' . escapeshellarg($this->storagePath) . ' 2>&1');
-        if ($ex === null) {
-            throw new RuntimeException('Could not get disk usage');
-        }
-
-        $lines = explode("\n", $ex);
-        if (count($lines) < 2) {
-            throw new RuntimeException('Could not get disk usage');
-        }
-
-        $line = $lines[1];
-        $parts = preg_split('/\s+/', $line);
-        if (count($parts) < 5) {
-            throw new RuntimeException('Could not get disk usage');
-        }
-
-        return [
-            'percent' => $parts[4],
-            'free' => $parts[3],
-        ];
+        $this->filesystem->remove($deploymentToDelete->path);
     }
 }

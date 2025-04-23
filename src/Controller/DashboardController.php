@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\DiskUsageService;
 use App\Service\ProjectService;
 use App\Service\UrlService;
 use Exception;
@@ -21,6 +22,7 @@ final class DashboardController extends AbstractController
         #[Autowire(env: 'RAH_HOSTNAME')]
         private readonly string $rahHostname,
         private readonly UrlService $urlService,
+        private readonly DiskUsageService $diskUsageService,
     ) {
     }
 
@@ -39,7 +41,7 @@ final class DashboardController extends AbstractController
         return $this->render('dashboard.html.twig', [
             'dashboardUrl' => $this->urlService->getUrl(),
             'projects' => $this->projectService->loadAll(),
-            'diskUsage' => $this->projectService->getDiskUsage(),
+            'diskUsage' => $this->diskUsageService->getDiskUsage(),
         ]);
     }
 
@@ -71,7 +73,7 @@ final class DashboardController extends AbstractController
         $response = $this->render('dashboard-project.html.twig', [
             'dashboardUrl' => $this->urlService->getUrl(),
             'project' => $project,
-            'diskUsage' => $this->projectService->getDiskUsage(),
+            'diskUsage' => $this->diskUsageService->getDiskUsage(),
         ]);
         $response->setStatusCode($statusCode);
         return $response;

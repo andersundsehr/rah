@@ -88,10 +88,11 @@ services:
       # RAH_API_KEY is generated and placed in rah/.env + it is printed in the docker log on startup
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
       RAH_STORAGE_PATH: '/storage'
-      # allows access to all deployments if client has ip from list
-      RAH_AUTH_IPS: "213.61.68.122,127.0.0.1"
-      # allows access to all deployments if client uses this auth
-      RAH_BASIC_AUTH: "rah:rah"
+      RAH_MAX_DISK_USAGE: '10G' # max disk usage for the whole rah storage (will auto delete old deployments)
+      # allows access if client has one of the IPs can accept ranges eg: 127.0.0.0/8 or special private_ranges (shortcut for private IP address ranges of your proxy)
+      RAH_AUTH_IPS: "213.61.68.122,213.61.68.0/24,private_ranges"
+      # allows access if client uses the basic auth user and password (multiple users can be separated with a comma)
+      RAH_BASIC_AUTH: "rah:passRah,customer:passCustomer"
 ````
 
 ### URL structure
@@ -178,12 +179,14 @@ The HTML report will be available in the `build/coverage` directory. Open `build
 ###### TODO
 
 - needed:
-  - RAH_AUTH_IPS
-  - RAH_BASIC_AUTH
+  - change footer info (Total Disk Usage)
+    - show percentage of storage used in relation to RAH_MAX_DISK_USAGE
+    - Show warning if the storage is not available anymore
+  - add cronjob for background deletions `console background:cleanup-old-deployments -vvv`
   - CI build
-- if the time is good:
-  - add cronjob for background deletions of old deployments
 - maybe:
   - defaultDeployment remove/or implement
   - deleteIfMissingMr remove/or implement
   - deleteIfMissingBranch remove/or implement
+  - add url to repo
+  - add url to branch

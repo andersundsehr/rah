@@ -27,7 +27,8 @@ ARG LAST_GIT_TAG
 WORKDIR /app
 
 ENV WEB_DOCUMENT_ROOT=/app/public \
-    RAH_STORAGE_PATH=/storage
+    RAH_STORAGE_PATH=/storage \
+    RAH_MAX_DISK_USAGE=10GB
 
 VOLUME /storage
 

@@ -16,6 +16,7 @@ final readonly class Deployment
         public Size $size,
         public string $url,
         public DateTimeImmutable $lastUpdate,
+        public Settings $deploymentSettings,
     ) {
     }
 

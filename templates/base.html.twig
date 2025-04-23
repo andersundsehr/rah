@@ -10,20 +10,19 @@
     {% endblock %}
   </head>
   <body class="body">
-    {% block body %}{% endblock %}
-
-    {% block footer %}
-      <footer class="footer">
-        <p class="footer__text">Total Disk Usage: {{ diskUsage.percent }} <br>Free Space: {{ diskUsage.free }}<br><br>
-          HowToUse:
-        </p>
-        <pre class="code-block language-bash" tabindex="0"><code class="language-bash" id="foo"><span class="token builtin class-name">source</span> <span
-              class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token function">curl</span> <span
-              class="token parameter variable">-sSL</span> <a class=link href="{{ dashboardUrl }}/install.sh">{{ dashboardUrl }}/install.sh</a><span class="token punctuation">)</span>
+    <main style="padding-bottom: 200px">
+      {% block body %}{% endblock %}
+    </main>
+    <footer class="footer">
+      <p class="footer__text">Total Disk Usage: {{ diskUsage.percent }} <br>Free Space: {{ diskUsage.free }}<br><br>
+        HowToUse:
+      </p>
+      <pre class="code-block language-bash" tabindex="0"><code class="language-bash" id="foo"><span class="token builtin class-name">source</span> <span
+            class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token function">curl</span> <span
+            class="token parameter variable">-sSL</span> <a class=link href="{{ dashboardUrl }}/install.sh">{{ dashboardUrl }}/install.sh</a><span class="token punctuation">)</span>
 <span class="token builtin class-name">rah upload</span> dist/public/ <span class="token builtin class-name">.</span>
 <span class="token builtin class-name">rah append</span> .playwright/report/ .playwright/
 </code></pre>
-      </footer>
-    {% endblock %}
+    </footer>
   </body>
 </html>

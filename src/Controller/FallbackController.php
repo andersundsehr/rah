@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\DiskUsageService;
 use App\Service\ProjectService;
 use App\Service\UrlService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,6 +33,7 @@ final class FallbackController extends AbstractController
         #[Autowire(env: 'RAH_STORAGE_PATH')]
         private readonly string $storagePath,
         private readonly UrlService $urlService,
+        private readonly DiskUsageService $diskUsageService,
     ) {
     }
 
@@ -130,7 +132,7 @@ final class FallbackController extends AbstractController
             'listing' => $listing,
             'breadcrumbs' => $breadcrumbs,
             'dashboardUrl' => $this->urlService->getUrl(),
-            'diskUsage' => $this->projectService->getDiskUsage(),
+            'diskUsage' => $this->diskUsageService->getDiskUsage(),
         ]);
     }
 }

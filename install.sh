@@ -43,8 +43,9 @@ if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
 fi
 
 
-curl -o ~/bin/rah -SL --fail $RAH_API/rah || {
+curl --progress-bar -o ~/bin/rah -SL --fail $RAH_API/rah || {
     echo "Failed to download $RAH_API/rah"
     return 1
 }
 chmod +x ~/bin/rah
+rah -V
