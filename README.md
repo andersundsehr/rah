@@ -23,6 +23,8 @@ Basic upload (with override):
 ````bash
 # the install.sh automatically exports the RAH_API for you
 source <(curl -sSL http://rah.localhost/install.sh)
+# RAH_API_KEY is generated and placed in storage/rah-api-key.txt + it is printed in the docker log on startup
+export RAH_API_KEY=rah_...
 rah upload dist/public/ .
 ````
 
@@ -70,7 +72,7 @@ services:
     volumes:
       - ./rah:/storage
     environment:
-      # RAH_API_KEY is generated and placed in rah/.env + it is printed in the docker log on startup
+      # RAH_API_KEY is generated and placed in storage/rah-api-key.txt + it is printed in the docker log on startup
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
       RAH_STORAGE_PATH: '/storage'
       RAH_MAX_DISK_USAGE: '10G' # max disk usage for the whole rah storage (will auto delete old deployments)

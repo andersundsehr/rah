@@ -7,6 +7,7 @@ use App\Dto\Size;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
+use Safe\Exceptions\JsonException;
 use SplFileInfo;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,16 +21,18 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use ZipArchive;
 
 use function basename;
+use function getenv;
 use function is_file;
+use function Safe\filesize;
+use function Safe\fopen;
+use function Safe\json_decode;
+use function Safe\json_encode;
+use function Safe\realpath;
 use function sprintf;
+use function str_starts_with;
 use function strlen;
 use function substr;
 use function sys_get_temp_dir;
-use function Safe\realpath;
-use function Safe\filesize;
-use function Safe\fopen;
-use function Safe\json_encode;
-use function Safe\json_decode;
 
 use const JSON_PRETTY_PRINT;
 use const PHP_EOL;
@@ -46,6 +49,8 @@ class UploadCommand extends Command
     private readonly HttpClientInterface $client;
 
     private SymfonyStyle $io;
+
+    private string $apiKey;
 
     public function __construct(private readonly Filesystem $filesystem = new Filesystem())
     {
@@ -65,6 +70,13 @@ class UploadCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
+
+        $this->apiKey = getenv('RAH_API_KEY') ?: '';
+        if (!str_starts_with($this->apiKey, 'rah_')) {
+            $this->io->error('env RAH_API_KEY must be set and start with rah_');
+            return Command::FAILURE;
+        }
+
         $source = (string)$input->getArgument('source');
         $destination = (string)$input->getArgument('destination');
         $settings = Settings::fromEnv($input->getOptions());
@@ -74,8 +86,6 @@ class UploadCommand extends Command
         }
 
         $this->doUpload($source, $destination, $settings);
-
-        $this->io->success('Done ' . static::ACTION . 'ing files!');
 
         return Command::SUCCESS;
     }
@@ -163,23 +173,34 @@ class UploadCommand extends Command
         $response = $this->client->request(static::ACTION === 'append' ? 'POST' : 'PUT', $url, [
             'query' => $parameters,
             'body' => fopen($zipFileName, 'rb'),
+            'auth_basic' => ['api', $this->apiKey],
             'headers' => [
                 'Content-Type' => 'application/zip',
                 'Content-Length' => (string)filesize($zipFileName),
                 'Accept' => 'application/json',
+                'User-Agent' => 'rah/' . ($this->getApplication()?->getVersion() ?? throw new RuntimeException('no version')),
             ],
         ]);
+        if ($response->getStatusCode() === 401) {
+            $this->io->error(
+                'Authentication failed. Please check your API key and try again. RAH_API_TOKEN' . PHP_EOL . 'Response 401: ' . $response->getContent(false),
+            );
+            return;
+        }
+
         if ($response->getStatusCode() >= 300 || true) {
             $content = $response->getContent(false);
-            echo str_replace('http://rah.localhost/', 'http://rah.localhost:3333/', $response->getInfo('url')) . PHP_EOL;
-            echo json_encode(json_decode($content), JSON_PRETTY_PRINT) . PHP_EOL;
-
-            echo 'size: ' . Size::formatSize(filesize($zipFileName)) . PHP_EOL;
+            echo str_replace('http://rah.localhost/', 'http://rah.localhost:3333/', $response->getInfo('url')) . PHP_EOL; // TODO remove after testing
+            try {
+                echo json_encode(json_decode($content), JSON_PRETTY_PRINT) . PHP_EOL;
+            } catch (JsonException) {
+                echo $content . PHP_EOL;
+            }
 
             throw new RuntimeException(sprintf("Upload failed (%s): %s %s", $response->getInfo('url'), $response->getStatusCode(), $content));
         }
 
         $location = $response->getHeaders()['location'] ?? '';
-        $this->io->success('Uploaded successful! ' . $location);
+        $this->io->success('Done ' . static::ACTION . 'ing files!' . ($location ? ' see: ' . $location : ''));
     }
 }

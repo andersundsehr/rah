@@ -4,8 +4,7 @@
   <tr>
     <th style="width: 45%">name</th>
     <th>size</th>
-    <th>date</th>
-    <th>time</th>
+    <th>upload</th>
   </tr>
   </thead>
   <tbody>
@@ -13,8 +12,19 @@
     <tr>
       <td class="table__cell"><a href="{{ deployment.url }}" class="link">{{ deployment.name }}</a></td>
       <td class="table__cell">{{ deployment.size.humanReadable }}</td>
-      <td class="table__cell">{{ deployment.lastUpdate|date('d.m.Y') }}</td>
-      <td class="table__cell">{{ deployment.lastUpdate|date('H:i A') }}</td>
+      <td class="table__cell">
+        <relative-time
+          lang="en-GB"
+          format="relative"
+          precision="minute"
+          threshold="P1D"
+          format-style="long"
+          minute="2-digit"
+          hour="2-digit"
+          month="2-digit"
+          datetime="{{ deployment.lastUpdate|date('Y-m-d\\TH:i:sP') }}"
+        >{{ deployment.lastUpdate|date('H:i d.m.Y') }}</relative-time>
+      </td>
     </tr>
   {% endfor %}
   </tbody>
