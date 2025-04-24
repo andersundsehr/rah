@@ -29,16 +29,11 @@ final class BackgroundCleanupOldDeploymentsCommand extends Command
     public function __construct(
         private readonly ProjectService $projectService,
         private readonly RequestStack $requestStack,
-        #[Autowire(env:'RAH_MAX_DISK_USAGE')]
         string $rahMaxDiskUsage,
         private readonly FileSizeService $fileSizeService,
     ) {
         parent::__construct();
         $this->maxBytes = $this->fileSizeService->convertToBytes($rahMaxDiskUsage);
-    }
-
-    protected function configure(): void
-    {
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -64,7 +59,6 @@ final class BackgroundCleanupOldDeploymentsCommand extends Command
 
         while ($totalSize > $this->maxBytes && $deployments) {
             $deploymentToDelete = array_shift($deployments);
-            assert($deploymentToDelete instanceof Deployment);
             $io->caution('Deleting deployment: ' . $deploymentToDelete->project->name . '--' . $deploymentToDelete->name . ' freeing up ' . $deploymentToDelete->size->humanReadable);
             $this->projectService->deleteDeployment($deploymentToDelete);
             $totalSize -= $deploymentToDelete->size->bytes;

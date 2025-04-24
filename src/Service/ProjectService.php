@@ -31,12 +31,10 @@ final readonly class ProjectService
         private UrlService $urlService,
         private DeploymentService $deploymentService,
         private FileSizeService $fileSizeService,
-        #[Autowire(env: 'RAH_STORAGE_PATH')]
-        private string $storagePath,
-        #[Autowire(env: 'RAH_HOSTNAME')]
+        private string $rahStoragePath,
         private string $rahHostname,
     ) {
-        if (!str_starts_with($this->storagePath, '/')) {
+        if (!str_starts_with($this->rahStoragePath, '/')) {
             throw new RuntimeException('RAH_STORAGE_PATH should be an absolute path');
         }
     }
@@ -70,11 +68,11 @@ final readonly class ProjectService
     {
         $projects = [];
 
-        if (!$this->filesystem->exists($this->storagePath)) {
+        if (!$this->filesystem->exists($this->rahStoragePath)) {
             return $projects;
         }
 
-        foreach ((new Finder())->directories()->in($this->storagePath)->depth(0) as $directory) {
+        foreach ((new Finder())->directories()->in($this->rahStoragePath)->depth(0) as $directory) {
             $projectName = $directory->getBasename();
             $projects[$projectName] = $this->load($projectName);
         }
@@ -86,7 +84,7 @@ final readonly class ProjectService
 
     public function load(string $name): Project
     {
-        $path = $this->storagePath . '/' . $name;
+        $path = $this->rahStoragePath . '/' . $name;
 
         if (!$this->filesystem->exists($path)) {
             throw new NotFoundHttpException('Project not found: ' . $name);
@@ -100,8 +98,8 @@ final readonly class ProjectService
 
     public function create(string $projectName): Project
     {
-        $this->filesystem->mkdir($this->storagePath . '/' . $projectName);
-        $this->filesystem->touch($this->storagePath . '/' . $projectName);
+        $this->filesystem->mkdir($this->rahStoragePath . '/' . $projectName);
+        $this->filesystem->touch($this->rahStoragePath . '/' . $projectName);
 
         return $this->load($projectName);
     }

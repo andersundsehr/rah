@@ -3,7 +3,7 @@
   "license": "proprietary",
   "type": "project",
   "require": {
-    "php": ">=8.2",
+    "php": "~8.3.0 || ~8.4.0",
     "ext-ctype": "*",
     "ext-iconv": "*",
     "ext-zip": "*",
@@ -22,7 +22,7 @@
     "symfony/twig-bundle": "~7.2.0",
     "symfony/validator": "~7.2.5",
     "symfony/yaml": "~7.2.5",
-    "thecodingmachine/safe": ">=3.0.2"
+    "thecodingmachine/safe": "^3.1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.6.22",
@@ -31,7 +31,7 @@
     "symfony/css-selector": "~7.2.0",
     "symfony/maker-bundle": "^1.62.1",
     "symfony/phpunit-bridge": "^7.2",
-    "thecodingmachine/phpstan-safe-rule": ">=1.4"
+    "thecodingmachine/phpstan-safe-rule": "^1.4"
   },
   "replace": {
     "symfony/polyfill-ctype": "*",

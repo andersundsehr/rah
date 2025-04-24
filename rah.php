@@ -20,8 +20,6 @@ $application->setName('rah CLI');
 $application->setVersion(str_starts_with('@dev_version@', '@dev_version') ? '1337.1337.1337' : '@dev_version@');
 
 $application->add(new AppendCommand());
-$application->add(new DeleteDeploymentCommand());
-$application->add(new DeleteProjectCommand());
 $application->add(new UploadCommand());
 $application->add(new VersionCheckCommand());
 

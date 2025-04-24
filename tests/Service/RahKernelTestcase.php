@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use Override;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,6 +42,7 @@ abstract class RahKernelTestcase extends KernelTestCase
         ]));
     }
 
+    #[Override]
     protected function tearDown(): void
     {
         parent::tearDown();

@@ -4,10 +4,9 @@ is an docker image with that you can host your SPA app and review your PRs with 
 
 ## Functions:
 
-- host infinitely many projects and reports (as long as you have disk space)
-- host infinitely many parallel deployments (as long as you have disk space)
-- auto cleanup of old deployments
-- a deployment has a defined lifetime
+- host infinitely many projects and reports (until RAH_MAX_DISK_USAGE is hit)
+- host infinitely many parallel deployments (until RAH_MAX_DISK_USAGE is hit)
+- auto cleanup of old deployments (default branches will be cleanup up last)
 - a deployment can be uploaded with replace or append
 - a deployment can be uploaded with a custom name
 
@@ -59,20 +58,6 @@ export RAH_DELETE_IF_MISSING_BRANCH="main"
 Add additional files (reports) to the deployment: 
 ````bash
 rah append .playwright/report/ reports/
-````
-
-### delete command
-
-````bash
-rah delete-deployment
-# or
-rah delete-project
-````
-
-### get url command
-
-````bash
-rah url
 ````
 
 ## docker container:
@@ -179,11 +164,10 @@ The HTML report will be available in the `build/coverage` directory. Open `build
 ###### TODO
 
 - needed:
-  - change footer info (Total Disk Usage)
-    - show percentage of storage used in relation to RAH_MAX_DISK_USAGE
-    - Show warning if the storage is not available anymore
   - add cronjob for background deletions `console background:cleanup-old-deployments -vvv`
   - CI build
+  - upload Token???
+    - run console command in /opt/docker/provision/entrypoint.d
 - maybe:
   - defaultDeployment remove/or implement
   - deleteIfMissingMr remove/or implement

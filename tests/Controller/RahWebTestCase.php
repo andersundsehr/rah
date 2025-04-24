@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use Override;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -40,11 +41,13 @@ abstract class RahWebTestCase extends WebTestCase
      * @param array<mixed> $options
      * @param array<mixed> $server
      */
+    #[Override]
     protected static function createClient(array $options = [], array $server = []): KernelBrowser
     {
         throw new RuntimeException('use $this->client instead');
     }
 
+    #[Override]
     protected function tearDown(): void
     {
         parent::tearDown();

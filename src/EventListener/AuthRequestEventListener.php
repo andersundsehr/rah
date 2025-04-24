@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use App\Service\ApiKeyService;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,15 +11,15 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 use function array_filter;
 use function explode;
+use function hash_equals;
 use function in_array;
 
 final readonly class AuthRequestEventListener
 {
     public function __construct(
-        #[Autowire(env: 'RAH_BASIC_AUTH')]
         private string $rahBasicAuth,
-        #[Autowire(env: 'RAH_AUTH_IPS')]
         private string $rahAuthIps,
+        private ApiKeyService $apiKeyService,
     ) {
     }
 
@@ -36,6 +36,13 @@ final readonly class AuthRequestEventListener
         }
 
         $request = $event->getRequest();
+
+        if ($request->getUser() === 'api' && $this->apiKeyService->verifyKey($request->getPassword())) {
+            // Authenticated by API key
+            // $request->set() authed api token?
+            return;
+        }
+
         if ($this->testBasicAuth($request->getUser(), $request->getPassword())) {
             // Authenticated by basic Auth
             return;
@@ -55,9 +62,11 @@ final readonly class AuthRequestEventListener
             $html .= '<br>RAH_BASIC_AUTH: authentication by basic auth is enabled, but your credentials are not valid';
         }
 
-        $event->setResponse(new Response($html, Response::HTTP_UNAUTHORIZED, [
-            'WWW-Authenticate' => 'Basic realm="Restricted Area"',
-        ]));
+        $event->setResponse(
+            new Response($html, Response::HTTP_UNAUTHORIZED, [
+                'WWW-Authenticate' => 'Basic realm="Restricted Area"',
+            ]),
+        );
     }
 
     private function testBasicAuth(?string $givenUser, ?string $givenPassword): bool

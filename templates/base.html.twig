@@ -14,12 +14,17 @@
       {% block body %}{% endblock %}
     </main>
     <footer class="footer">
-      <p class="footer__text">Total Disk Usage: {{ diskUsage.percent }} <br>Free Space: {{ diskUsage.free }}<br><br>
+      <p class="footer__text">
+        Storage Usage {{ diskUsage.used.humanReadable }} / {{ diskUsage.limit.humanReadable }} (<span class="{% if diskUsage.percent > 0.9 %}warning{% endif %}">{{ diskUsage.percentHuman }}</span>)<br>
+        {% if diskUsage.diskIsFullWarning %}
+          <span class="warning">Warning: Disk only has {{ diskUsage.availableDisk.humanReadable }} left, but storage has {{ diskUsage.free.humanReadable }} potential usage left</span>
+        {% endif %}
+        <br>
         HowToUse:
       </p>
       <pre class="code-block language-bash" tabindex="0"><code class="language-bash" id="foo"><span class="token builtin class-name">source</span> <span
             class="token operator">&lt;</span><span class="token punctuation">(</span><span class="token function">curl</span> <span
-            class="token parameter variable">-sSL</span> <a class=link href="{{ dashboardUrl }}/install.sh">{{ dashboardUrl }}/install.sh</a><span class="token punctuation">)</span>
+            class="token parameter variable">-sSL</span> <a class=link target="_blank" href="{{ dashboardUrl }}/install.sh">{{ dashboardUrl }}/install.sh</a><span class="token punctuation">)</span>
 <span class="token builtin class-name">rah upload</span> dist/public/ <span class="token builtin class-name">.</span>
 <span class="token builtin class-name">rah append</span> .playwright/report/ .playwright/
 </code></pre>

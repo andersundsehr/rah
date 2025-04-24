@@ -12,7 +12,6 @@ final readonly class UrlService
 {
     public function __construct(
         private RequestStack $requestStack,
-        #[Autowire(env: 'RAH_HOSTNAME')]
         private string $rahHostname,
     ) {
     }

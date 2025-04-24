@@ -34,6 +34,11 @@
   margin-top: 20px;
 }
 
+.warning {
+  color: light-dark(#ff1b1b, #f44);
+  font-variant: petite-caps;
+}
+
 .list {
   list-style-type: none;
   padding: 0;

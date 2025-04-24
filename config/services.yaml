@@ -10,6 +10,13 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+          $rahStoragePath: '%env(RAH_STORAGE_PATH)%'
+          $rahHostname: '%env(RAH_HOSTNAME)%'
+          $rahMaxDiskUsage: '%env(RAH_MAX_DISK_USAGE)%'
+          $rahVersion: '%env(RAH_VERSION)%'
+          $rahBasicAuth: '%env(RAH_BASIC_AUTH)%'
+          $rahAuthIps: '%env(RAH_AUTH_IPS)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

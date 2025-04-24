@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Service\DiskUsageService;
+use App\Attribute\ApiTokenRequired;
+use App\Service\StorageUsageService;
 use App\Service\ProjectService;
 use App\Service\UrlService;
 use Exception;
@@ -19,10 +20,9 @@ final class DashboardController extends AbstractController
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        #[Autowire(env: 'RAH_HOSTNAME')]
         private readonly string $rahHostname,
         private readonly UrlService $urlService,
-        private readonly DiskUsageService $diskUsageService,
+        private readonly StorageUsageService $diskUsageService,
     ) {
     }
 

@@ -12,7 +12,6 @@ use Symfony\Component\Routing\Attribute\Route;
 final class RahBinController extends AbstractController
 {
     public function __construct(
-        #[Autowire(env: 'RAH_HOSTNAME')]
         private readonly string $rahHostname,
     ) {
     }

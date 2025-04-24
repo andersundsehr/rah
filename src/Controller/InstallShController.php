@@ -16,9 +16,7 @@ final class InstallShController extends AbstractController
 {
     public function __construct(
         private readonly Filesystem $filesystem,
-        #[Autowire(env: 'RAH_HOSTNAME')]
         private readonly string $rahHostname,
-        #[Autowire(env: 'RAH_VERSION')]
         private readonly string $rahVersion,
     ) {
     }

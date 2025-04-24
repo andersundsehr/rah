@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Attribute\ApiTokenRequired;
 use App\Service\ProjectService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -18,6 +19,7 @@ final class ApiProjectController extends AbstractController
 
     #[Route('/api/project', name: 'app_api_project_delete', methods: ['DELETE'])]
     #[Route('/api/project:delete', name: 'app_api_project_delete_get', methods: ['GET'])]
+    #[ApiTokenRequired]
     public function deleteProject(
         #[MapQueryParameter] string $projectName
     ): JsonResponse {

@@ -14,7 +14,7 @@ use function Safe\preg_replace;
 
 final readonly class Settings
 {
-    public const DEFAULT_DELETE_AFTER = '1m';
+    public const string DEFAULT_DELETE_AFTER = '1m';
 
     public function __construct(
         public string $api,

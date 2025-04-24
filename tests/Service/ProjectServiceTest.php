@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use Override;
 use App\Dto\Project;
 use App\Service\ProjectService;
 use RuntimeException;
@@ -12,6 +13,7 @@ class ProjectServiceTest extends RahKernelTestcase
 {
     private ProjectService $projectService;
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();

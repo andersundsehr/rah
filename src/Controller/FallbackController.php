@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\DiskUsageService;
+use App\Service\StorageUsageService;
 use App\Service\ProjectService;
 use App\Service\UrlService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,10 +30,9 @@ final class FallbackController extends AbstractController
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        #[Autowire(env: 'RAH_STORAGE_PATH')]
-        private readonly string $storagePath,
+        private readonly string $rahStoragePath,
         private readonly UrlService $urlService,
-        private readonly DiskUsageService $diskUsageService,
+        private readonly StorageUsageService $diskUsageService,
     ) {
     }
 
@@ -48,7 +47,7 @@ final class FallbackController extends AbstractController
 
         $directory = '/app/public/';
         if ($projectName && $deploymentName) {
-            $directory = $this->storagePath . '/' . $projectName . '/' . $deploymentName . '/';
+            $directory = $this->rahStoragePath . '/' . $projectName . '/' . $deploymentName . '/';
         }
 
         $tryFiles = [

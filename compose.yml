@@ -25,6 +25,7 @@ services:
 
       WEB_DOCUMENT_ROOT: $PWD/public
       RAH_STORAGE_PATH: ${RAH_STORAGE_PATH:-/storage}
+      RAH_MAX_DISK_USAGE: ${RAH_MAX_DISK_USAGE:-10G}
       # allows access to all deployments if client has ip from list
       RAH_AUTH_IPS: "213.61.68.122,private_ranges"
       # allows access to all deployments if client uses this auth

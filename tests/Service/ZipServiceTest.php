@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
+use Override;
 use ZipArchive;
 use RuntimeException;
 use App\Service\ProjectService;
@@ -15,6 +16,7 @@ class ZipServiceTest extends RahKernelTestcase
 {
     private ZipService $zipService;
 
+    #[Override]
     protected function setUp(): void
     {
         parent::setUp();

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Attribute\ApiTokenRequired;
 use App\Dto\Settings;
 use App\Service\DeploymentService;
 use App\Service\ProjectService;
@@ -22,6 +23,7 @@ use function str_replace;
 use function stream_copy_to_stream;
 use function sys_get_temp_dir;
 use function tempnam;
+use function Safe\fopen;
 
 final class ApiDeploymentController extends AbstractController
 {
@@ -34,6 +36,7 @@ final class ApiDeploymentController extends AbstractController
 
     #[Route('/api/deployment', name: 'app_api_deployment_delete', methods: ['DELETE'])]
     #[Route('/api/deployment:delete', name: 'app_api_deployment_delete_get', methods: ['GET'])]
+    #[ApiTokenRequired]
     public function delete(
         #[MapQueryString] Settings $settings
     ): JsonResponse {
@@ -55,6 +58,7 @@ final class ApiDeploymentController extends AbstractController
     }
 
     #[Route('/api/deployment', name: 'app_api_upload', methods: ['POST', 'PUT', 'GET'])]
+    #[ApiTokenRequired]
     public function upload(
         Request $request,
         #[MapQueryString] Settings $settings,
@@ -85,9 +89,9 @@ final class ApiDeploymentController extends AbstractController
 
             $input = fopen('php://input', 'rb');
             $zipFile = fopen($zipFileName, 'wb+');
-            stream_copy_to_stream($input, $zipFile);
-            fclose($input);
-            fclose($zipFile);
+            \Safe\stream_copy_to_stream($input, $zipFile);
+            \Safe\fclose($input);
+            \Safe\fclose($zipFile);
 
             $this->zipService->unzip($zipFileName, $deployment->path . '/' . $destination, $append);
         } finally {

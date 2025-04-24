@@ -15,14 +15,16 @@ final readonly class Size
 
     public static function formatSize(int $bytes): string
     {
+        $isNegative = $bytes < 0;
+        $bytes = abs($bytes);
         // round to 2 decimal places for each KB MB GB ..
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         $i = 0;
         while ($bytes >= 1024 && $i < count($units) - 1) {
             $bytes /= 1024;
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return ($isNegative ? '-' : '') . round($bytes, 2) . ' ' . $units[$i];
     }
 }
