@@ -31,6 +31,17 @@ final class StartupEnsureApiKeyCreatedCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        $output->writeln('<fg=white;bg=magenta>                       </>');
+        $output->writeln('<fg=white;bg=magenta>                       </>');
+        $output->writeln('<fg=white;bg=magenta>                       </>');
+        $output->writeln('<fg=white;bg=magenta>                       </>');
+        $output->writeln('<fg=white;bg=magenta>                       </>');
+        $output->writeln('<fg=white;bg=magenta>██████▄ ▄█████▄ ██   ██</>');
+        $output->writeln('<fg=white;bg=magenta>██   ██ ██   ██ ██   ██</>');
+        $output->writeln('<fg=white;bg=magenta>██████  ███████ ███████</>');
+        $output->writeln('<fg=white;bg=magenta>██   ██ ██   ██ ██   ██</>');
+        $output->writeln('<fg=white;bg=magenta>██   ██ ██   ██ ██   ██</>');
+
         $forced = (bool)$input->getOption('force-recreate');
         $created = $this->apiKeyService->createIfNeeded($forced);
         if ($created) {

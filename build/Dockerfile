@@ -38,6 +38,7 @@ COPY --from=build --chown=1000:1000 /app/public/ /app/public/
 COPY --from=build --chown=1000:1000 /app/templates/ /app/templates/
 COPY --from=build --chown=1000:1000 /app/config/ /app/config/
 COPY --from=build --chown=1000:1000 /app/.env.dev /app/composer.json /app/composer.lock /app/install.sh /app/
+COPY --from=build --chown=1000:1000 /app/bin/startup-ensure-api-key-created.sh /opt/docker/provision/entrypoint.d/99-startup-ensure-api-key-created.sh
 
 RUN echo "APP_ENV=prod" > .env
 RUN echo "APP_DEBUG=0" >> .env

@@ -166,8 +166,8 @@ The HTML report will be available in the `build/coverage` directory. Open `build
 - needed:
   - add cronjob for background deletions `console background:cleanup-old-deployments -vvv`
   - CI build
-  - upload Token???
-    - run console command in /opt/docker/provision/entrypoint.d
+  - upload Token
+    - add to rah CLI 
 - maybe:
   - defaultDeployment remove/or implement
   - deleteIfMissingMr remove/or implement
