@@ -138,6 +138,9 @@
   vertical-align: text-top;
 }
 
+.code-block-wrapper {
+  overflow: auto;
+}
 
 .code-block {
   background: #272822;
@@ -145,10 +148,12 @@
   text-shadow: 0 1px rgba(0, 0, 0, .3);
   font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
   border-radius: .5em;
-  display: inline-block;
+  display: block;
   margin: 0 auto;
   padding: 8px 15px;
-  text-align: left;  line-height: 1.5;
+  text-align: left;
+  line-height: 1.5;
+  width: max-content;
 }
 
 .class-name {
@@ -164,8 +169,8 @@
   background-color: light-dark(var(--text-light), var(--theme-color-light));
   color: light-dark(var(--theme-color-dark), var(--bg-light));
   position: absolute;
-  margin-top: -30px;
-  margin-left: -30px;
+  margin-top: -26px;
   padding: 2px 12px;
   border-radius: 9999px;
+  border-bottom-left-radius: 0px;
 }
