@@ -31,12 +31,20 @@ final readonly class ZipService
         try {
             $zip->extractTo($tempExtractionFolder);
             $zip->close();
-            $deploymentContent = $this->filesystem->readFile($path . '/deployment.json');
+
+            $deploymentContent = '';
+            if ($this->filesystem->exists($path . '/deployment.json')) {
+                $deploymentContent = $this->filesystem->readFile($path . '/deployment.json');
+            }
+
             $this->filesystem->mirror($tempExtractionFolder, $path, null, [
                 'override' => true,
                 'delete' => !$append,
             ]);
-            $this->filesystem->dumpFile($path . '/deployment.json', $deploymentContent);
+            if ($deploymentContent) {
+                $this->filesystem->dumpFile($path . '/deployment.json', $deploymentContent);
+            }
+
             $this->filesystem->touch($path);
         } finally {
             $this->filesystem->remove($tempExtractionFolder);

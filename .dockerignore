@@ -9,6 +9,6 @@ build/pkgroot
 build/source
 build/coverage
 build/spc
-compose.yml
+#compose.yml
 .phpunit.result.cache
 .env.local

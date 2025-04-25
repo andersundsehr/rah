@@ -17,8 +17,8 @@ use function in_array;
 final readonly class AuthRequestEventListener
 {
     public function __construct(
-        private string $rahBasicAuth,
-        private string $rahAuthIps,
+        private ?string $rahBasicAuth,
+        private ?string $rahAuthIps,
         private ApiKeyService $apiKeyService,
     ) {
     }
@@ -75,7 +75,7 @@ final readonly class AuthRequestEventListener
             return false;
         }
 
-        foreach (array_filter(explode(',', $this->rahBasicAuth)) as $auth) {
+        foreach (array_filter(explode(',', (string)$this->rahBasicAuth)) as $auth) {
             if (hash_equals($auth, $givenUser . ':' . $givenPassword)) {
                 return true;
             }
@@ -90,7 +90,7 @@ final readonly class AuthRequestEventListener
             return false;
         }
 
-        $allowedIps = array_filter(explode(',', $this->rahAuthIps));
+        $allowedIps = array_filter(explode(',', (string)$this->rahAuthIps));
         if (!$allowedIps) {
             return false;
         }

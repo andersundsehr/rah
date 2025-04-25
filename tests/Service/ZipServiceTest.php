@@ -26,14 +26,14 @@ class ZipServiceTest extends RahKernelTestcase
     public function testUnzip(): void
     {
         // Create a temporary zip file
-        $zipFileName = $this->tempStorage . '/test.zip';
+        $zipFileName = $this->tempStorage . 'test.zip';
         $zip = new ZipArchive();
         $zip->open($zipFileName, ZipArchive::CREATE);
         $zip->addFromString('test.txt', 'This is a test file.');
         $zip->close();
 
         // Define the extraction path
-        $extractionPath = $this->tempStorage . '/extracted';
+        $extractionPath = $this->tempStorage . 'extracted';
 
         // Call the unzip method
         $this->zipService->unzip($zipFileName, $extractionPath, false);
@@ -47,20 +47,20 @@ class ZipServiceTest extends RahKernelTestcase
     public function testUnzipWithAppend(): void
     {
         // Create a temporary zip file
-        $zipFileName = $this->tempStorage . '/test.zip';
+        $zipFileName = $this->tempStorage . 'test.zip';
         $zip = new ZipArchive();
         $zip->open($zipFileName, ZipArchive::CREATE);
         $zip->addFromString('test1.txt', 'This is the first test file.');
         $zip->close();
 
         // Define the extraction path
-        $extractionPath = $this->tempStorage . '/extracted';
+        $extractionPath = $this->tempStorage . 'extracted';
 
         // Extract the first zip file
         $this->zipService->unzip($zipFileName, $extractionPath, false);
 
         // Create another zip file to append
-        $zipFileName2 = $this->tempStorage . '/test2.zip';
+        $zipFileName2 = $this->tempStorage . 'test2.zip';
         $zip = new ZipArchive();
         $zip->open($zipFileName2, ZipArchive::CREATE);
         $zip->addFromString('test2.txt', 'This is the second test file.');
@@ -79,11 +79,11 @@ class ZipServiceTest extends RahKernelTestcase
     public function testUnzipThrowsExceptionForInvalidZip(): void
     {
         // Create an invalid zip file
-        $invalidZipFileName = $this->tempStorage . '/invalid.zip';
+        $invalidZipFileName = $this->tempStorage . 'invalid.zip';
         $this->filesystem->dumpFile($invalidZipFileName, 'This is not a valid zip file.');
 
         // Define the extraction path
-        $extractionPath = $this->tempStorage . '/extracted';
+        $extractionPath = $this->tempStorage . 'extracted';
 
         // Expect an exception to be thrown
         $this->expectException(RuntimeException::class);

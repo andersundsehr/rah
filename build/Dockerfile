@@ -1,24 +1,38 @@
-FROM webdevops/php-nginx-dev:8.3-alpine AS build
+FROM pluswerk/php-dev:nginx-8.3-alpine AS build-micro-sfx
+
+COPY ./build/build-micro-sfx.sh /app/build/build-micro-sfx.sh
+
+RUN cd /app/build && ./build-micro-sfx.sh
+
+FROM pluswerk/php-dev:nginx-8.3-alpine AS build
 
 WORKDIR /app
 
 RUN git config --global --add safe.directory /app
 
+COPY composer.json composer.lock /app/
+
+RUN composer install --no-scripts --no-plugins
+
 COPY . /app/
 
 RUN composer install
 
-#RUN ./vendor/bin/grumphp run
+RUN ./vendor/bin/grumphp run
 
-#RUN composer test
+RUN composer test
 
 RUN composer install --no-dev
+
+ENV COMPOSER_BIN_DIR=/root/.composer/vendor/bin
 
 RUN composer global require humbug/box
 
 RUN /root/.composer/vendor/bin/box compile
 
-RUN cd ./build && ./package-rah-bin.sh && cd -
+COPY --from=build-micro-sfx /app/build/buildroot/bin/micro.sfx /app/build/buildroot/bin/micro.sfx
+
+RUN cd /app/build && ./package-rah-bin.sh && /app/public/.rah/rah --version
 
 FROM webdevops/php-nginx:8.3-alpine AS production
 
@@ -32,6 +46,7 @@ ENV WEB_DOCUMENT_ROOT=/app/public \
 
 VOLUME /storage
 
+COPY --from=build --chown=1000:1000 /app/bin/ /app/bin/
 COPY --from=build --chown=1000:1000 /app/src/ /app/src/
 COPY --from=build --chown=1000:1000 /app/vendor/ /app/vendor/
 COPY --from=build --chown=1000:1000 /app/public/ /app/public/

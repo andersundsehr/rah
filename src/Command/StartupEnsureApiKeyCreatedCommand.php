@@ -22,15 +22,8 @@ final class StartupEnsureApiKeyCreatedCommand extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
+    public static function rahLogo(OutputInterface $output): void
     {
-        $this->addOption('force-recreate', 'f', InputOption::VALUE_NONE, 'Force Recreate the api key');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $io = new SymfonyStyle($input, $output);
-
         $output->writeln('<fg=white;bg=magenta>                       </>');
         $output->writeln('<fg=white;bg=magenta>                       </>');
         $output->writeln('<fg=white;bg=magenta>                       </>');
@@ -41,6 +34,18 @@ final class StartupEnsureApiKeyCreatedCommand extends Command
         $output->writeln('<fg=white;bg=magenta>██████  ███████ ███████</>');
         $output->writeln('<fg=white;bg=magenta>██   ██ ██   ██ ██   ██</>');
         $output->writeln('<fg=white;bg=magenta>██   ██ ██   ██ ██   ██</>');
+    }
+
+    protected function configure(): void
+    {
+        $this->addOption('force-recreate', 'f', InputOption::VALUE_NONE, 'Force Recreate the api key');
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+
+        self::rahLogo($output);
 
         $forced = (bool)$input->getOption('force-recreate');
         $created = $this->apiKeyService->createIfNeeded($forced);

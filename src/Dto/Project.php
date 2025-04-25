@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
+use Stringable;
 use App\Service\DeploymentService;
 use App\Service\ProjectService;
 use DateTimeImmutable;
 use JsonSerializable;
 
-final readonly class Project implements JsonSerializable
+final readonly class Project implements JsonSerializable, Stringable
 {
     /** @var array<string, Deployment> */
     public array $deployments;
@@ -54,5 +55,10 @@ final readonly class Project implements JsonSerializable
             ...(array)$this,
             'deployments' => $deployments,
         ];
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 }

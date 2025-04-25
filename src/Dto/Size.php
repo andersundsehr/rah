@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
-final readonly class Size
+use Stringable;
+
+final readonly class Size implements Stringable
 {
     public string $humanReadable;
 
@@ -26,5 +28,10 @@ final readonly class Size
         }
 
         return ($isNegative ? '-' : '') . round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    public function __toString(): string
+    {
+        return $this->humanReadable;
     }
 }

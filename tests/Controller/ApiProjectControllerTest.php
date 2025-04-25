@@ -2,19 +2,14 @@
 
 namespace App\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\Filesystem\Filesystem;
-
-use function dirname;
-use function tempnam;
+use function base64_encode;
 
 class ApiProjectControllerTest extends RahWebTestCase
 {
     public function testDeleteProject(): void
     {
         // Correctly pass the projectName parameter in the DELETE request
-        $this->client->request('DELETE', '/api/project?projectName=test_project', [], [], ['CONTENT_TYPE' => 'application/json']);
+        $this->client->request('DELETE', '/api/project?projectName=test_project', [], [], []);
 
         // Assert response
         self::assertResponseIsSuccessful();
@@ -27,10 +22,24 @@ class ApiProjectControllerTest extends RahWebTestCase
         $this->assertFalse($this->filesystem->exists($this->testProjectPath));
     }
 
+    public function testDeleteProjectWithWrongToken(): void
+    {
+        // Correctly pass the projectName parameter in the DELETE request
+        $this->client->request('DELETE', '/api/project?projectName=test_project', [], [], [
+            'HTTP_AUTHORIZATION' => 'Basic ' . base64_encode('api:api'),
+            ]);
+
+        // Assert response
+        self::assertResponseStatusCodeSame(401);
+
+        // Assert the project directory was deleted
+        $this->assertTrue($this->filesystem->exists($this->testProjectPath));
+    }
+
     public function testDeleteProjectNotFound(): void
     {
         // Correctly pass the projectName parameter in the DELETE request
-        $this->client->request('DELETE', '/api/project?projectName=test_project_not_found', [], [], ['CONTENT_TYPE' => 'application/json']);
+        $this->client->request('DELETE', '/api/project?projectName=test_project_not_found', [], [], []);
 
         // Assert response
         self::assertResponseIsSuccessful();

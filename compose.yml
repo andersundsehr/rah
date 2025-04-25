@@ -12,7 +12,8 @@ services:
       - ~/.ssh:/home/application/.ssh
       - ~/.gitconfig:/home/application/.gitconfig
       # container config:
-      - ./bin/startup-ensure-api-key-created.sh:/opt/docker/provision/entrypoint.d/99-startup-ensure-api-key-created.sh
+      - ./bin/startup.sh:/opt/docker/provision/entrypoint.d/99-startup.sh
+      - ./bin/cron.sh:/app/bin/cron.sh
 #      - ./nginx-config/vhost.conf:/opt/docker/etc/nginx/vhost.conf
       # open phpstorm from inside the container on Windows:
       - /mnt/:/mnt/

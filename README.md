@@ -166,7 +166,6 @@ The HTML report will be available in the `build/coverage` directory. Open `build
 ###### TODO
 
 - needed:
-  - add cronjob for background deletions `console background:cleanup-old-deployments -vvv`
   - CI build
 - maybe:
   - defaultDeployment remove/or implement
