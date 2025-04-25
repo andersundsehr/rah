@@ -26,6 +26,9 @@
   padding: 0;
   background-color: light-dark(var(--bg-light), var(--bg-dark));
   color: light-dark(var(--text-light), var(--text-dark));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .header__title {
@@ -83,11 +86,10 @@
   color: light-dark(var(--text-light), var(--theme-color-dark));
   text-align: center;
   padding: 10px 0;
-  position: fixed;
-  bottom: 0;
   width: 100%;
   box-shadow: light-dark(0 -2px 4px rgba(0, 0, 0, 0.1), 0 -2px 4px rgba(0, 0, 0, 0.5));
   font-size: 0.9em;
+  margin-top: auto;
 }
 
 .footer__text {
