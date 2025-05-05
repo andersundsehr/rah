@@ -8,7 +8,6 @@ use App\Dto\Deployment;
 use App\Dto\Project;
 use App\Dto\Settings;
 use RuntimeException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -74,7 +73,13 @@ final readonly class ProjectService
 
         foreach ((new Finder())->directories()->in($this->rahStoragePath)->depth(0) as $directory) {
             $projectName = $directory->getBasename();
-            $projects[$projectName] = $this->load($projectName);
+            $project = $this->load($projectName);
+            if (!$project->deployments) {
+                $this->filesystem->remove($project->path);
+                continue;
+            }
+
+            $projects[$projectName] = $project;
         }
 
         uasort($projects, fn(Project $a, Project $b): int => $b->lastUpdate <=> $a->lastUpdate);

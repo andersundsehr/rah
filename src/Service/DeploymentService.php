@@ -7,12 +7,13 @@ namespace App\Service;
 use App\Dto\Deployment;
 use App\Dto\Project;
 use App\Dto\Settings;
+use RuntimeException;
 use Safe\DateTimeImmutable;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Serializer\Exception\MissingConstructorArgumentsException;
 use Symfony\Component\Serializer\SerializerInterface;
 
-use function json_decode;
 use function Safe\filemtime;
 use function uasort;
 
@@ -51,12 +52,18 @@ final readonly class DeploymentService
         $lastUpdate = new DateTimeImmutable('@' . filemtime($path));
 
         if (!$this->filesystem->exists($path . '/deployment.json')) {
-            $this->filesystem->dumpFile($path . '/deployment.json', '{}');
+            $this->filesystem->remove($path);
+            throw new RuntimeException('Deployment ' . $name . ' for project ' . $project->name . ' did not have a deployment.json file. The deployment was removed.');
         }
 
         $file = $this->filesystem->readFile($path . '/deployment.json');
 
-        $deploymentSettings = $this->serializer->deserialize($file, Settings::class, 'json');
+        try {
+            $deploymentSettings = $this->serializer->deserialize($file, Settings::class, 'json');
+        } catch (MissingConstructorArgumentsException) {
+            $this->filesystem->remove($path);
+            throw new RuntimeException('Deployment ' . $name . ' for project ' . $project->name . ' did not have a valid deployment.json file. The deployment was removed.');
+        }
 
         return new Deployment($project, $path, $name, $size, $url, $lastUpdate, $deploymentSettings);
     }

@@ -2,19 +2,14 @@
 
 namespace App\Controller;
 
-use App\Attribute\ApiTokenRequired;
-use App\Service\StorageUsageService;
 use App\Service\ProjectService;
+use App\Service\StorageUsageService;
 use App\Service\UrlService;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-
-use function basename;
 
 final class DashboardController extends AbstractController
 {

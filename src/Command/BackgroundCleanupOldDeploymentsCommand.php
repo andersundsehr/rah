@@ -18,7 +18,7 @@ use function array_shift;
 
 #[AsCommand(
     name: 'background:cleanup-old-deployments',
-    description: 'Add a short description for your command',
+    description: 'a background task that removes old deployments if the limit is reached',
 )]
 final class BackgroundCleanupOldDeploymentsCommand extends Command
 {
@@ -36,7 +36,8 @@ final class BackgroundCleanupOldDeploymentsCommand extends Command
 
     protected function configure(): void
     {
-        $this->addOption('dry-run', 'd', null, 'Do not delete anything, just show what would be deleted');
+        $this->addOption('dry-run', 'd', null, 'Do not delete anything, just show what would be deleted')
+            ->addOption('print-table', '', null, 'always print the table');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -60,12 +61,6 @@ final class BackgroundCleanupOldDeploymentsCommand extends Command
 
         ksort($deployments, SORT_NATURAL);
 
-        if ($totalSize <= $this->maxBytes) {
-            $message = 'No cleanup needed. Total size: ' . Size::formatSize($totalSize) . ' / ' . Size::formatSize($this->maxBytes);
-            $output->writeln('<fg=green>' . $message . '</>');
-            return Command::SUCCESS;
-        }
-
         $printRows = [];
         foreach ($deployments as $deployment) {
             $printRows[] = [
@@ -77,9 +72,27 @@ final class BackgroundCleanupOldDeploymentsCommand extends Command
             ];
         }
 
+        if ($totalSize <= $this->maxBytes) {
+            $message = 'No cleanup needed. Total size: ' . Size::formatSize($totalSize) . ' / ' . Size::formatSize($this->maxBytes);
+            $output->writeln('<fg=green>' . $message . '</>');
+
+            if ($input->getOption('print-table')) {
+                if ($printRows) {
+                    $io->table(array_keys($printRows[0]), $printRows);
+                } else {
+                    $io->warning('No deployments found.');
+                }
+            }
+
+            return Command::SUCCESS;
+        }
+
+
         if ($printRows) {
             $io->table(array_keys($printRows[0]), $printRows);
         }
+
+
 
         $output->writeln('before: ' . Size::formatSize($totalSize) . ' allowed: ' . Size::formatSize($this->maxBytes));
 

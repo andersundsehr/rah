@@ -75,7 +75,7 @@ services:
       # RAH_API_KEY is generated and placed in storage/rah-api-key.txt + it is printed in the docker log on startup
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
       RAH_STORAGE_PATH: '/storage'
-      RAH_MAX_DISK_USAGE: '10G' # max disk usage for the whole rah storage (will auto delete old deployments)
+      RAH_MAX_DISK_USAGE: '10G' # max disk usage for the whole rah storage (will auto delete old deployments) (K M G T P E supported)
       # allows access if client has one of the IPs can accept ranges eg: 127.0.0.0/8 or special private_ranges (shortcut for private IP address ranges of your proxy)
       RAH_AUTH_IPS: "213.61.68.122,213.61.68.0/24,private_ranges"
       # allows access if client uses the basic auth user and password (multiple users can be separated with a comma)

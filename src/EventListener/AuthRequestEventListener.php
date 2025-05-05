@@ -40,16 +40,19 @@ final readonly class AuthRequestEventListener
         if ($request->getUser() === 'api' && $this->apiKeyService->verifyKey($request->getPassword())) {
             // Authenticated by API key
             // $request->set() authed api token?
+//            $event->setResponse(new Response('Authenticated by API key'));
             return;
         }
 
         if ($this->testBasicAuth($request->getUser(), $request->getPassword())) {
             // Authenticated by basic Auth
+//            $event->setResponse(new Response('Authenticated by basic Auth'));
             return;
         }
 
         if ($this->testIpAuth($request->getClientIp())) {
             // Authenticated by IPAuth
+//            $event->setResponse(new Response('Authenticated by IPAuth'));
             return;
         }
 

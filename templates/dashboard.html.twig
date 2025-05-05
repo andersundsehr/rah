@@ -18,6 +18,8 @@
         <a href="{{ project.url }}" class="link">{{ project.name }}</a>
         {% include 'partials/project-card.html.twig' %}
       </li>
+    {% else %}
+      <li class="list__item"><em>no projects found</em></li>
     {% endfor %}
   </ul>
 {% endblock %}
