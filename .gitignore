@@ -8,7 +8,6 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-.env
 vendor/
 storage/
 storage-root/
@@ -35,3 +34,4 @@ build/spc
 
 public/.rah/rah
 rah.phar
+exports.sh

@@ -5,6 +5,7 @@ namespace App\Controller;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,6 +14,8 @@ final class RahBinController extends AbstractController
 {
     public function __construct(
         private readonly string $rahHostname,
+        private readonly Filesystem $filesystem,
+        public string $rahBinLocation = __DIR__ . '/../../public/.rah/rah',
     ) {
     }
 
@@ -23,11 +26,10 @@ final class RahBinController extends AbstractController
             return $this->forward(FallbackController::class . '::show');
         }
 
-        $file = '/../../public/.rah/rah';
-        if (!is_file(__DIR__ . $file)) {
+        if (!$this->filesystem->exists($this->rahBinLocation)) {
             throw new RuntimeException('rah file not found did you build it locally?');
         }
 
-        return $this->file(__DIR__ . $file, 'rah');
+        return $this->file($this->rahBinLocation, 'rah');
     }
 }

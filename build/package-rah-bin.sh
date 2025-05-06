@@ -8,6 +8,7 @@ fi
 
 #./spc micro:combine ../rah.phar -O ../public/.rah/rah
 cat buildroot/bin/micro.sfx ../rah.phar > ../public/.rah/rah
+chmod +x ../public/.rah/rah
 
 echo " file: rah"
 echo " size: $(du -h ../public/.rah/rah | cut -f1)"

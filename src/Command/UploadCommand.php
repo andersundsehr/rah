@@ -23,6 +23,7 @@ use ZipArchive;
 use function basename;
 use function getenv;
 use function is_file;
+use function is_string;
 use function Safe\filesize;
 use function Safe\fopen;
 use function Safe\json_decode;
@@ -93,7 +94,6 @@ class UploadCommand extends Command
     protected function doUpload(string $source, string $destination, Settings $settings): void
     {
         $zipFileName = $this->filesystem->tempnam(sys_get_temp_dir(), 'rah_', '.zip');
-        $zipFileName = basename($zipFileName); // TODO remove after testing
 
         try {
             $this->zipDirectory($source, $zipFileName);
@@ -114,9 +114,15 @@ class UploadCommand extends Command
 
         $this->io->writeln('opened ZIP file: ' . $zipFileName, OutputInterface::VERBOSITY_VERY_VERBOSE);
 
+        if (!is_file($source)) {
+            throw new RuntimeException('Source is not present ' . $source);
+        }
+
         $source = str_replace('\\', '/', realpath($source));
 
-        if (is_dir($source)) {
+        if (is_file($source)) {
+            $zip->addFile($source, basename($source));
+        } elseif (is_dir($source)) {
             $files = new RecursiveIteratorIterator(
                 new RecursiveDirectoryIterator($source),
                 RecursiveIteratorIterator::SELF_FIRST,
@@ -150,10 +156,8 @@ class UploadCommand extends Command
             }
 
             $this->io->write('', true, OutputInterface::VERBOSITY_VERY_VERBOSE);
-        } elseif (is_file($source)) {
-            $zip->addFile($source, basename($source));
         } else {
-            throw new RuntimeException('Could not add file to zip');
+            throw new RuntimeException('Source is not present ' . $source);
         }
 
         $numFiles = $zip->numFiles;
@@ -188,9 +192,8 @@ class UploadCommand extends Command
             return;
         }
 
-        if ($response->getStatusCode() >= 300 || true) {
+        if ($response->getStatusCode() >= 300) {
             $content = $response->getContent(false);
-            echo str_replace('http://rah.localhost/', 'http://rah.localhost:3333/', $response->getInfo('url')) . PHP_EOL; // TODO remove after testing
             try {
                 echo json_encode(json_decode($content), JSON_PRETTY_PRINT) . PHP_EOL;
             } catch (JsonException) {
@@ -200,7 +203,12 @@ class UploadCommand extends Command
             throw new RuntimeException(sprintf("Upload failed (%s): %s %s", $response->getInfo('url'), $response->getStatusCode(), $content));
         }
 
-        $location = $response->getHeaders()['location'] ?? '';
-        $this->io->success('Done ' . static::ACTION . 'ing files!' . ($location ? ' see: ' . $location : ''));
+        $location = $response->getHeaders()['location'][0] ?? '';
+        $message = 'Done ' . static::ACTION . 'ing files!';
+        if ($location) {
+            $message .= ' see: ' . $location;
+        }
+
+        $this->io->success($message);
     }
 }
