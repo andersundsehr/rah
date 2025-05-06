@@ -53,7 +53,7 @@ final readonly class DeploymentService
 
         if (!$this->filesystem->exists($path . '/deployment.json')) {
             $this->filesystem->remove($path);
-            throw new RuntimeException('Deployment ' . $name . ' for project ' . $project->name . ' did not have a deployment.json file. The deployment was removed.');
+            throw new RuntimeException('Deployment ' . $project->name . '--' . $name . ' did not have a deployment.json file. The deployment was removed.');
         }
 
         $file = $this->filesystem->readFile($path . '/deployment.json');
@@ -62,7 +62,7 @@ final readonly class DeploymentService
             $deploymentSettings = $this->serializer->deserialize($file, Settings::class, 'json');
         } catch (MissingConstructorArgumentsException) {
             $this->filesystem->remove($path);
-            throw new RuntimeException('Deployment ' . $name . ' for project ' . $project->name . ' did not have a valid deployment.json file. The deployment was removed.');
+            throw new RuntimeException('Deployment ' . $project->name . '--' . $name . ' did not have a valid deployment.json file. The deployment was removed.');
         }
 
         return new Deployment($project, $path, $name, $size, $url, $lastUpdate, $deploymentSettings);
