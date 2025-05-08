@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1-labs
 FROM pluswerk/php-dev:nginx-8.3-alpine AS build-micro-sfx
 
 COPY ./build/build-micro-sfx.sh /app/build/build-micro-sfx.sh
@@ -20,7 +21,7 @@ COPY composer.json composer.lock /app/
 
 RUN composer install --no-scripts --no-plugins
 
-COPY . /app/
+COPY --exclude=build.sh --exclude=build/Dockerfile . /app/
 
 RUN composer install --ansi
 
@@ -58,5 +59,6 @@ COPY --from=build --chown=1000:1000 /app/bin/startup.sh /opt/docker/provision/en
 
 RUN echo "APP_ENV=prod" > .env
 RUN echo "APP_DEBUG=0" >> .env
+
 ARG LAST_GIT_TAG
-RUN echo "RAH_VERSION=$LAST_GIT_TAG" >> .env
+ENV RAH_VERSION=$LAST_GIT_TAG
