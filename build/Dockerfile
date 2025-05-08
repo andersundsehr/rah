@@ -59,6 +59,7 @@ COPY --from=build --chown=1000:1000 /app/bin/startup.sh /opt/docker/provision/en
 
 RUN echo "APP_ENV=prod" > .env
 RUN echo "APP_DEBUG=0" >> .env
+RUN echo RAH_VERSION=$LAST_GIT_TAG >> .env
 
 ARG LAST_GIT_TAG
 ENV RAH_VERSION=$LAST_GIT_TAG
