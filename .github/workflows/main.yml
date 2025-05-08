@@ -58,4 +58,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            LAST_GIT_TAG: ${{ steps.meta.outputs.version }}
+            LAST_GIT_TAG=${{ steps.meta.outputs.version }}
