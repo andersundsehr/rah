@@ -21,6 +21,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 use ZipArchive;
 
 use function basename;
+use function file_exists;
 use function getenv;
 use function is_file;
 use function is_string;
@@ -114,7 +115,7 @@ class UploadCommand extends Command
 
         $this->io->writeln('opened ZIP file: ' . $zipFileName, OutputInterface::VERBOSITY_VERY_VERBOSE);
 
-        if (!is_file($source)) {
+        if (!file_exists($source)) {
             throw new RuntimeException('Source is not present ' . $source);
         }
 

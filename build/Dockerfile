@@ -38,7 +38,6 @@ RUN cd /app/build && ./package-rah-bin.sh && /app/public/.rah/rah --version --an
 
 FROM webdevops/php-nginx:8.3-alpine AS production
 
-ARG LAST_GIT_TAG
 
 WORKDIR /app
 
@@ -59,4 +58,5 @@ COPY --from=build --chown=1000:1000 /app/bin/startup.sh /opt/docker/provision/en
 
 RUN echo "APP_ENV=prod" > .env
 RUN echo "APP_DEBUG=0" >> .env
+ARG LAST_GIT_TAG
 RUN echo "RAH_VERSION=$LAST_GIT_TAG" >> .env

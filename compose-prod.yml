@@ -1,6 +1,6 @@
 services:
   rah:
-    image: andersundsehr/rah:latest
+    image: andersundsehr/rah:1
     init: true
     volumes:
       - storage:/storage
