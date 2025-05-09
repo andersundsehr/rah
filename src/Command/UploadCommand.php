@@ -83,7 +83,7 @@ class UploadCommand extends Command
         $destination = (string)$input->getArgument('destination');
         $settings = Settings::fromEnv($input->getOptions());
 
-        if (!str_starts_with($destination, '.')) {
+        if (!str_starts_with($destination, './')) {
             $destination = './' . ltrim($destination, '/');
         }
 
@@ -207,7 +207,7 @@ class UploadCommand extends Command
         $location = $response->getHeaders()['location'][0] ?? '';
         $message = 'Done ' . static::ACTION . 'ing files!';
         if ($location) {
-            $message .= ' see: ' . $location;
+            $message .= ' see: ' . PHP_EOL . $location . '/' . ltrim($destination, '/');
         }
 
         $this->io->success($message);

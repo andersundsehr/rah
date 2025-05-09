@@ -79,7 +79,7 @@ final class ApiDeploymentController extends AbstractController
 
         // make path safe and relative
         $destination = str_replace('..', '', $destination);
-        $destination = ltrim($destination, './');
+        $destination = ltrim($destination, '/');
 
         $zipFileName = $this->filesystem->tempnam(sys_get_temp_dir(), 'rah-', '.zip');
 
