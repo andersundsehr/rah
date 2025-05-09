@@ -188,7 +188,7 @@ class UploadCommand extends Command
         ]);
         if ($response->getStatusCode() === 401) {
             $this->io->error(
-                'Authentication failed. Please check your API key and try again. RAH_API_TOKEN' . PHP_EOL . 'Response 401: ' . $response->getContent(false),
+                'Authentication failed. Please check your API key and try again. RAH_API_KEY' . PHP_EOL . 'Response 401: ' . $response->getContent(false),
             );
             return;
         }

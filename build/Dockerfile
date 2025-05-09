@@ -37,29 +37,27 @@ COPY --from=build-micro-sfx /app/build/buildroot/bin/micro.sfx /app/build/buildr
 
 RUN cd /app/build && ./package-rah-bin.sh && /app/public/.rah/rah --version --ansi
 
+RUN mkdir -p /output && \
+    mv /app/bin /output/bin && \
+    mv /app/src /output/src && \
+    mv /app/vendor /output/vendor && \
+    mv /app/public /output/public && \
+    mv /app/templates /output/templates && \
+    mv /app/config /output/config && \
+    mv /app/.env.dev /app/composer.json /app/composer.lock /app/install.sh /output/ && \
+    echo "APP_ENV=prod" > /output/.env && \
+    echo "APP_DEBUG=0" >> /output/.env
+
 FROM webdevops/php-nginx:8.3-alpine AS production
 
 
-WORKDIR /app
-
+ARG LAST_GIT_TAG
 ENV WEB_DOCUMENT_ROOT=/app/public \
     RAH_STORAGE_PATH=/storage \
-    RAH_MAX_DISK_USAGE=10G
+    RAH_MAX_DISK_USAGE=10G \
+    RAH_VERSION=$LAST_GIT_TAG
 
 VOLUME /storage
 
-COPY --from=build --chown=1000:1000 /app/bin/ /app/bin/
-COPY --from=build --chown=1000:1000 /app/src/ /app/src/
-COPY --from=build --chown=1000:1000 /app/vendor/ /app/vendor/
-COPY --from=build --chown=1000:1000 /app/public/ /app/public/
-COPY --from=build --chown=1000:1000 /app/templates/ /app/templates/
-COPY --from=build --chown=1000:1000 /app/config/ /app/config/
-COPY --from=build --chown=1000:1000 /app/.env.dev /app/composer.json /app/composer.lock /app/install.sh /app/
-COPY --from=build --chown=1000:1000 /app/bin/startup.sh /opt/docker/provision/entrypoint.d/99-startup.sh
-
-RUN echo "APP_ENV=prod" > .env
-RUN echo "APP_DEBUG=0" >> .env
-ARG LAST_GIT_TAG
-
-RUN echo RAH_VERSION=$LAST_GIT_TAG >> .env
-ENV RAH_VERSION=$LAST_GIT_TAG
+COPY --from=build --chown=1000:1000 /output/ /var/www/html/
+COPY --from=build --chown=1000:1000 /output/bin/startup.sh /opt/docker/provision/entrypoint.d/99-startup.sh

@@ -15,14 +15,14 @@ is an docker image with that you can host your SPA app and review your PRs with 
 ### install
 
 ````bash
-source <(curl -sSL http://rah.localhost/install.sh)
+source <(curl --fail-with-body -sSL http://rah.localhost/install.sh)
 ````
 
 ### basic usage
 Basic upload (with override):
 ````bash
 # the install.sh automatically exports the RAH_API for you
-source <(curl -sSL http://rah.localhost/install.sh)
+source <(curl --fail-with-body -sSL http://rah.localhost/install.sh)
 # RAH_API_KEY is generated and placed in storage/rah-api-key.txt + it is printed in the docker log on startup
 export RAH_API_KEY=rah_...
 rah upload dist/public/ .
@@ -49,7 +49,7 @@ autodetection gitlab:
 #### customized example
 
 ````bash
-curl -sSL https://rah.example.com/install.sh | bash
+source <(curl --fail-with-body -sSL http://rah.localhost/install.sh)
 export RAH_PROJECTNAME="my-project"
 export RAH_DEPLOYMENT="my-deployment"
 export RAH_DEFAULT_DEPLOYMENT="my-deployment"
