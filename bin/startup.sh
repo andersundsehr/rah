@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -exuo pipefail
 
 echo "* * * * * cd $PWD && ./bin/cron.sh" | crontab -u application -
 chown -R application:application $RAH_STORAGE_PATH

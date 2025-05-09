@@ -50,6 +50,7 @@ RUN mkdir -p /output && \
 
 FROM webdevops/php-nginx:8.3-alpine AS production
 
+WORKDIR /app
 
 ARG LAST_GIT_TAG
 ENV WEB_DOCUMENT_ROOT=/app/public \
@@ -59,5 +60,5 @@ ENV WEB_DOCUMENT_ROOT=/app/public \
 
 VOLUME /storage
 
-COPY --from=build --chown=1000:1000 /output/ /var/www/html/
+COPY --from=build --chown=1000:1000 /output/ /app/
 COPY --from=build --chown=1000:1000 /output/bin/startup.sh /opt/docker/provision/entrypoint.d/99-startup.sh
