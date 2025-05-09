@@ -31,6 +31,7 @@ use function Safe\json_decode;
 use function Safe\json_encode;
 use function Safe\realpath;
 use function sprintf;
+use function str_replace;
 use function str_starts_with;
 use function strlen;
 use function substr;
@@ -207,7 +208,9 @@ class UploadCommand extends Command
         $location = $response->getHeaders()['location'][0] ?? '';
         $message = 'Done ' . static::ACTION . 'ing files!';
         if ($location) {
-            $message .= ' see: ' . PHP_EOL . $location . '/' . ltrim($destination, '/');
+            $url = $location . '/' . ltrim($destination, '/');
+            $url = str_replace('/./', '/', $url);
+            $message .= ' see: ' . PHP_EOL . $url;
         }
 
         $this->io->success($message);
