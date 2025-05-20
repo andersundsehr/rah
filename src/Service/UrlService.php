@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service;
 
 use RuntimeException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 final readonly class UrlService
@@ -13,10 +12,11 @@ final readonly class UrlService
     public function __construct(
         private RequestStack $requestStack,
         private string $rahHostname,
+        private NameShortingService $nameShortingService,
     ) {
     }
 
-    public function getUrl(?string $subdomain = null): string
+    public function getUrl(?string $projectName = null, ?string $deploymentName = null): string
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
@@ -32,8 +32,18 @@ final readonly class UrlService
             $portPart = '';
         }
 
-        if (!$subdomain) {
+        if (!$projectName && !$deploymentName) {
             return $request->getScheme() . '://' . $this->rahHostname . $portPart;
+        }
+
+        if (!$projectName) {
+            throw new RuntimeException('Project name is required if you pass a deployment name.');
+        }
+
+        if ($deploymentName) {
+            $subdomain = $this->nameShortingService->createShortName($projectName, $deploymentName);
+        } else {
+            $subdomain = $this->nameShortingService->hashIfTooLong($projectName, NameShortingService::MAX_LABEL_LENGTH);
         }
 
         return $request->getScheme() . '://' . $subdomain . '.' . $this->rahHostname . $portPart;

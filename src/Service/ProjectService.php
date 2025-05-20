@@ -12,6 +12,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+use function array_values;
 use function explode;
 use function json_encode;
 use function str_contains;
@@ -32,10 +33,37 @@ final readonly class ProjectService
         private FileSizeService $fileSizeService,
         private string $rahStoragePath,
         private string $rahHostname,
+        private NameShortingService $nameShortingService,
     ) {
         if (!str_starts_with($this->rahStoragePath, '/')) {
             throw new RuntimeException('RAH_STORAGE_PATH should be an absolute path');
         }
+    }
+
+    public function getProjectOrDeploymentFromHostname(string $host): Project|Deployment|null
+    {
+        if (!str_ends_with($host, $this->rahHostname)) {
+            throw new RuntimeException('base domain mismatch: ' . $host . ' does not end with .' . $this->rahHostname);
+        }
+
+        $part = str_replace($this->rahHostname, '', $host);
+        $part = trim($part, '.');
+        if (str_contains($part, '.')) {
+            throw new RuntimeException('Invalid project name (no dots allowed): ' . $part);
+        }
+
+        if (count(explode('--', $part)) > 2) {
+            throw new RuntimeException('Invalid project name (only one -- allowed): ' . $part);
+        }
+
+        [$projectPart, $deploymentPart] = explode('--', $part . '--', 3);
+
+        $project = $this->findProject($projectPart);
+        if (!$project) {
+            return null;
+        }
+
+        return $this->findDeployment($project, $deploymentPart) ?? $project;
     }
 
     /**
@@ -132,5 +160,15 @@ final readonly class ProjectService
     public function deleteDeployment(Deployment $deploymentToDelete): void
     {
         $this->filesystem->remove($deploymentToDelete->path);
+    }
+
+    private function findProject(string $projectPart): ?Project
+    {
+        return $this->nameShortingService->findObjectByName($projectPart, ...array_values($this->loadAll()));
+    }
+
+    private function findDeployment(Project $project, string $deploymentPart): ?Deployment
+    {
+        return $this->nameShortingService->findObjectByName($deploymentPart, ...array_values($project->deployments));
     }
 }

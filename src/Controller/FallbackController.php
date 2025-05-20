@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\Deployment;
 use App\Service\StorageUsageService;
 use App\Service\ProjectService;
 use App\Service\UrlService;
@@ -30,7 +31,6 @@ final class FallbackController extends AbstractController
 {
     public function __construct(
         private readonly ProjectService $projectService,
-        private readonly string $rahStoragePath,
         private readonly UrlService $urlService,
         private readonly StorageUsageService $diskUsageService,
     ) {
@@ -43,11 +43,11 @@ final class FallbackController extends AbstractController
         $uri = str_replace('..', '', $uri);
         $uri = urldecode($uri);
 
-        [$projectName, $deploymentName] = $this->projectService->getProjectParts($request->getHost());
+        $object = $this->projectService->getProjectOrDeploymentFromHostname($request->getHost());
 
         $directory = '/app/public/';
-        if ($projectName && $deploymentName) {
-            $directory = $this->rahStoragePath . '/' . $projectName . '/' . $deploymentName . '/';
+        if ($object instanceof Deployment) {
+            $directory = $object->path . '/';
         }
 
         $tryFiles = [

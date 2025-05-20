@@ -46,7 +46,7 @@ final readonly class DeploymentService
     public function load(Project $project, string $name): Deployment
     {
         $path = $project->path . '/' . $name;
-        $url = $this->urlService->getUrl($project->name . '--' . $name);
+        $url = $this->urlService->getUrl($project->name, $name);
         $size = $this->fileSizeService->getDirectorySize($path);
 
         $lastUpdate = new DateTimeImmutable('@' . filemtime($path));

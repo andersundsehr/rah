@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
+use App\Dto\Deployment;
 use App\Service\ProjectService;
 use App\Service\StorageUsageService;
 use App\Service\UrlService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class DashboardController extends AbstractController
@@ -42,11 +42,11 @@ final class DashboardController extends AbstractController
 
     private function projectDashboard(Request $request): Response
     {
-        [$projectName, $deploymentName] = $this->projectService->getProjectParts($request->getHost());
+        $object = $this->projectService->getProjectOrDeploymentFromHostname($request->getHost());
 
         $statusCode = 200;
 
-        if ($deploymentName) {
+        if ($object instanceof Deployment) {
             $response = $this->forward(FallbackController::class . '::show');
 
             if ($response->getStatusCode() !== 404) {
@@ -57,9 +57,7 @@ final class DashboardController extends AbstractController
             $statusCode = 404;
         }
 
-        try {
-            $project = $this->projectService->load($projectName);
-        } catch (NotFoundHttpException) {
+        if (!$object) {
             $response = $this->dashboard();
             $response->setStatusCode(404);
             return $response;
@@ -67,7 +65,7 @@ final class DashboardController extends AbstractController
 
         $response = $this->render('dashboard-project.html.twig', [
             'dashboardUrl' => $this->urlService->getUrl(),
-            'project' => $project,
+            'project' => $object,
             'diskUsage' => $this->diskUsageService->getDiskUsage(),
         ]);
         $response->setStatusCode($statusCode);
