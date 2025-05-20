@@ -43,7 +43,7 @@ final readonly class UrlService
         if ($deploymentName) {
             $subdomain = $this->nameShortingService->createShortName($projectName, $deploymentName);
         } else {
-            $subdomain = $this->nameShortingService->hashIfToLong($projectName, NameShortingService::MAX_LABEL_LENGTH);
+            $subdomain = $this->nameShortingService->hashIfTooLong($projectName, NameShortingService::MAX_LABEL_LENGTH);
         }
 
         return $request->getScheme() . '://' . $subdomain . '.' . $this->rahHostname . $portPart;
