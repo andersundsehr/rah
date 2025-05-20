@@ -111,7 +111,7 @@ volumes:
 
 - `https://<HOSTNAME>/` shows the dashboard of all deployed projects
 - `https://<PROJECT>.<HOSTNAME>/` shows the dashboard of the project
-- `https://<PROJECT>--<DEPLOYMENT>.<HOSTNAME>/` or if to long it will be hashed: eg `https://project-with-many-tools-that-reallly-is-to-long--1a380--histoire.<HOSTNAME>/`
+- `https://<PROJECT>--<DEPLOYMENT>.<HOSTNAME>/` or if too long it will be hashed: eg `https://project-with-many-tools-that-really-is-too-long--1a380--histoire.<HOSTNAME>/`
 - `https://<HOSTNAME>/api/` api to upload deployments
 - `https://<HOSTNAME>/install.sh` bash script to install `rah` cli tool
 

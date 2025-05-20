@@ -8,8 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function func_get_args;
-
 final class RedirectController extends AbstractController
 {
     public function __construct(private readonly UrlService $urlService)
