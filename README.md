@@ -28,6 +28,23 @@ export RAH_API_KEY=rah_...
 rah upload dist/public/ .
 ````
 
+### gitlab CI/CD example:
+````yaml
+build:
+  stage: build
+  image: node:22
+  script:
+    - yarn
+    - yarn lint
+    - yarn test:unit
+    - yarn build
+    - source <(curl --fail-with-body -sSL https://rah.andersundsehr.com/install.sh)
+    - rah upload .histoire/dist .
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    url: https://rah.andersundsehr.com/redirect?project=$CI_PROJECT_PATH_SLUG&deployment=$CI_COMMIT_REF_SLUG&path=.
+````
+
 ### environment variables client
 
 ENV variables:
@@ -94,7 +111,7 @@ volumes:
 
 - `https://<HOSTNAME>/` shows the dashboard of all deployed projects
 - `https://<PROJECT>.<HOSTNAME>/` shows the dashboard of the project
-- `https://<PROJECT>--<DEPLOYMENT>.<HOSTNAME>/`
+- `https://<PROJECT>--<DEPLOYMENT>.<HOSTNAME>/` or if to long it will be hashed: eg `https://project-with-many-tools-that-reallly-is-to-long--1a380--histoire.<HOSTNAME>/`
 - `https://<HOSTNAME>/api/` api to upload deployments
 - `https://<HOSTNAME>/install.sh` bash script to install `rah` cli tool
 
@@ -173,8 +190,6 @@ The HTML report will be available in the `build/coverage` directory. Open `build
 
 ###### TODO
 
-- needed:
-  - CI build
 - maybe:
   - defaultDeployment remove/or implement
   - deleteIfMissingMr remove/or implement
