@@ -3,6 +3,10 @@
 export RAH_API=###RAH_API###
 RAH_AVAILALBE=###RAH_AVAILALBE###
 
+if [ -z "$RAH_API_KEY" ]; then
+    echo "RAH_API_KEY is not set. Please set it to your API key."
+    return 1
+fi
 
 # Check if rah is already installed
 if command -v rah &> /dev/null
@@ -43,7 +47,7 @@ if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
 fi
 
 
-curl --progress-bar -o ~/bin/rah -SL --fail $RAH_API/rah || {
+curl -u api:$RAH_API_KEY --progress-bar -o ~/bin/rah -SL --fail $RAH_API/rah || {
     echo "Failed to download $RAH_API/rah"
     return 1
 }
