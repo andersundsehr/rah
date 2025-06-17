@@ -15,12 +15,12 @@
     </main>
     <footer class="footer">
       <p class="footer__text">
-        Storage Usage {{ diskUsage.used.humanReadable }} / <span class="tooltip" data-tooltip="configured in the env RAH_MAX_DISK_USAGE">{{ diskUsage.limit.humanReadable }}</span> (<span class="{% if diskUsage.percent > 0.9 %}warning{% endif %}">{{ diskUsage.percentHuman }}</span>)<br>
+        Storage Usage {{ diskUsage.used.humanReadable }} / <span class="tooltip" data-tooltip="configured in the env RAH_MAX_DISK_USAGE">{{ diskUsage.limit.humanReadable }}</span> (<span class="{% if diskUsage.percent > 90 %}warning{% endif %}">{{ diskUsage.percentHuman }}</span>)<br>
         {% if diskUsage.diskIsFullWarning %}
           <span class="warning">Warning: Disk only has {{ diskUsage.availableDisk.humanReadable }} left, but storage has {{ diskUsage.free.humanReadable }} potential usage left</span>
         {% endif %}
         <br>
-        HowToUse:
+        HowToUse: <span class="small">(works with gitlab and bitbucket)</span>
       </p>
       <div class="code-block-wrapper">
         <code class="code-block" id="foo">

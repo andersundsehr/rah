@@ -42,6 +42,10 @@
   font-variant: petite-caps;
 }
 
+.small {
+  font-size: 0.7em;
+}
+
 .list {
   list-style-type: none;
   padding: 0;
