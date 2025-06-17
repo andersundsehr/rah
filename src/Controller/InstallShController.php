@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Attribute\NoAuthRequiredAtAll;
 use Composer\InstalledVersions;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -22,6 +23,7 @@ final class InstallShController extends AbstractController
     }
 
     #[Route('/install.sh', name: 'app_install_sh')]
+    #[NoAuthRequiredAtAll]
     public function index(Request $request): Response
     {
         if ($request->getHost() !== $this->rahHostname) {
