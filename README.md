@@ -28,6 +28,15 @@ export RAH_API_KEY=rah_...
 rah upload dist/public/ .
 ````
 
+#### Autocompletion
+
+````bash
+# activate autocompletion for rah cli tool (temporarily)
+eval "$(rah completion $(basename $SHELL))"
+# activate autocompletion for rah cli tool (permanently) (bash)
+echo 'eval "$(rah completion bash)"' >> ~/.bashrc
+````
+
 ### gitlab CI/CD example:
 ````yaml
 build:
@@ -53,15 +62,8 @@ ENV variables:
 - `RAH_DEPLOYMENT` - name of the deployment (autodetected, required)
 - `RAH_DEPLOYMENT_MESSAGE` - description of the deployment (autodetected, required)
 - `RAH_DEFAULT_DEPLOYMENT` - set the default deployment (autodetected, required)
-- `RAH_DELETE_AFTER` - when the deployment should be deleted (optional) (ISO 8601 format or 1d, 1w, 1m, 1y) (default 1m)
-- `RAH_DELETE_IF_MISSING_BRANCH` - should be deleted if the branch is deleted (optional) `dose nothing right now`
 
-autodetection gitlab:
-- `RAH_PROJECTNAME=$CI_PROJECT_PATH_SLUG`
-- `RAH_DEPLOYMENT=$CI_COMMIT_REF_SLUG`
-- `RAH_DEPLOYMENT_MESSAGE=$CI_COMMIT_MESSAGE`
-- `RAH_DEFAULT_DEPLOYMENT=$CI_DEFAULT_BRANCH`
-- `RAH_DELETE_IF_MISSING_BRANCH=$CI_COMMIT_BRANCH`
+all of these are automatically detected for almost all CI systems. (see https://github.com/OndraM/ci-detector)
 
 #### customized example
 
@@ -70,8 +72,6 @@ source <(curl --fail-with-body -sSL http://rah.localhost/install.sh)
 export RAH_PROJECTNAME="my-project"
 export RAH_DEPLOYMENT="my-deployment"
 export RAH_DEFAULT_DEPLOYMENT="my-deployment"
-export RAH_DELETE_AFTER="2y"
-export RAH_DELETE_IF_MISSING_BRANCH="main"
 
 ### add additional files (eg. reports)
 Add additional files (reports) to the deployment: 
@@ -155,9 +155,11 @@ project metadata is stored inside `<RAH_STORAGE_PATH>/<PROJECT>/project.json` fi
 metadata is stored inside `<RAH_STORAGE_PATH>/<PROJECT>/<DEPLOYMENT_NAME>/deployment.json` file.
 ````json5
 {
-  "deleteAfter": "2025-01-01T00:00:00Z", // when the deployment should be deleted (optional)
-  "deleteIfMissingMr": 123, // should be deleted if the mr is closed (optional)
-  "deleteIfMissingBranch": "main", // should be deleted if the branch is deleted (optional)
+  "api": "https://rah.andersundsehr.com",
+  "projectName": "andersundsehr-project",
+  "deployment": "feature-helps-all",
+  "deploymentMessage": "✨ feat: add new component \"helps\"",
+  "defaultDeployment": "main"
 }
 ````
 
@@ -188,11 +190,13 @@ docker compose exec --user 1000:1000 rah composer test
 The HTML report will be available in the `build/coverage` directory. Open `build/coverage/index.html` in a web browser to view detailed coverage information.
 
 
-###### TODO
+###### Future ideas:
 
 - maybe:
-  - defaultDeployment remove/or implement
-  - deleteIfMissingMr remove/or implement
-  - deleteIfMissingBranch remove/or implement
+  - defaultDeployment implement 
+    - default branch is always on top of the list
+    - default branch will be deleted last
   - add url to repo
   - add url to branch
+  - add url to pipeline
+  - lookup if branch is deleted and than delete the deployment?

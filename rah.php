@@ -8,11 +8,11 @@ namespace Rah;
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Command\AppendCommand;
-use App\Command\DeleteDeploymentCommand;
-use App\Command\DeleteProjectCommand;
 use App\Command\UploadCommand;
 use App\Command\VersionCheckCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\DumpCompletionCommand;
+
 use function str_starts_with;
 
 $application = new Application();
@@ -22,5 +22,6 @@ $application->setVersion(str_starts_with('@dev_version@', '@dev_version') ? '133
 $application->add(new AppendCommand());
 $application->add(new UploadCommand());
 $application->add(new VersionCheckCommand());
+$application->add(new DumpCompletionCommand());
 
 $application->run();
