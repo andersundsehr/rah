@@ -58,8 +58,6 @@ class ProjectServiceTest extends RahKernelTestcase
             deployment: 'deployment1',
             deploymentMessage: 'Test deployment',
             defaultDeployment: 'default',
-            deleteAfter: Settings::DEFAULT_DELETE_AFTER,
-            deleteIfMissingBranch: '',
         ), JSON_PRETTY_PRINT));
         $this->filesystem->mkdir($this->tempStorage . '/project2/deployment1');
         $this->filesystem->dumpFile($this->tempStorage . '/project2/deployment1/deployment.json', json_encode(new Settings(
@@ -68,8 +66,6 @@ class ProjectServiceTest extends RahKernelTestcase
             deployment: 'deployment1',
             deploymentMessage: 'Test deployment',
             defaultDeployment: 'default',
-            deleteAfter: Settings::DEFAULT_DELETE_AFTER,
-            deleteIfMissingBranch: '',
         ), JSON_PRETTY_PRINT));
 
         $projects = $this->projectService->loadAll();

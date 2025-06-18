@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Dto\Settings;
 use App\Dto\Size;
+use App\Service\DirectoryAutoCompletion;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -23,8 +24,8 @@ use ZipArchive;
 use function basename;
 use function file_exists;
 use function getenv;
+use function is_dir;
 use function is_file;
-use function is_string;
 use function Safe\filesize;
 use function Safe\fopen;
 use function Safe\json_decode;
@@ -64,8 +65,8 @@ class UploadCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('source', InputArgument::OPTIONAL, 'Directory to upload files from', './public')
-            ->addArgument('destination', InputArgument::OPTIONAL, 'Destination to upload files to', '.');
+            ->addArgument('source', InputArgument::OPTIONAL, 'Directory to upload files from', './public', (new DirectoryAutoCompletion())(...))
+            ->addArgument('destination', InputArgument::OPTIONAL, 'Destination to upload files to', '.', (new DirectoryAutoCompletion())(...));
 
         Settings::addOptionsToCommand($this);
     }
