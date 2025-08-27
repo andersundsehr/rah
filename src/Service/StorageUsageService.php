@@ -7,7 +7,7 @@ namespace App\Service;
 use App\Dto\Size;
 use App\Dto\StorageUsage;
 use RuntimeException;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 use function Safe\shell_exec;
 use function Safe\preg_split;
@@ -20,6 +20,7 @@ final readonly class StorageUsageService
         private string $rahStoragePath,
         string $rahMaxDiskUsage,
         private FileSizeService $fileSizeService,
+        private Stopwatch $stopwatch,
     ) {
         if (!str_starts_with($this->rahStoragePath, '/')) {
             throw new RuntimeException('RAH_STORAGE_PATH should be an absolute path');
@@ -30,12 +31,18 @@ final readonly class StorageUsageService
 
     public function getDiskUsage(): StorageUsage
     {
-        $used = $this->fileSizeService->getDirectorySize($this->rahStoragePath);
+        $this->stopwatch->start('storage-usage-service-get-disk-usage');
+
+        // TODO use cache for this: cache will be redone if $used is set or in the background.
+        // TODO cache will be invalidated on deployment create/delete
+
+        $used = $this->fileSizeService->getStorageSize();
         $free = new Size(max($this->limit->bytes - $used->bytes, 0));
         $availableDisk = $this->availableDisk();
         $diskIsFullWarning = $free->bytes > $availableDisk->bytes;
         $percent = 100 / $this->limit->bytes * $used->bytes;
         $percentHuman = sprintf('%.2f%%', $percent);
+        $this->stopwatch->stop('storage-usage-service-get-disk-usage');
 
         return new StorageUsage(
             $this->limit,

@@ -33,7 +33,7 @@ final class ApiProjectController extends AbstractController
         }
 
         if (is_dir($project->path)) {
-            (new Filesystem())->remove($project->path);
+            new Filesystem()->remove($project->path);
         }
 
         return $this->json([

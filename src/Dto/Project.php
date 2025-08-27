@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
+use ReflectionClass;
 use Stringable;
 use App\Service\DeploymentService;
 use App\Service\ProjectService;
@@ -17,15 +18,25 @@ final readonly class Project implements JsonSerializable, Stringable
 
     public ?DateTimeImmutable $lastUpdate;
 
+    public Size $size;
+
     public function __construct(
         public string $name,
-        public Size $size,
         public string $path,
         public string $url,
         private ProjectService $projectService,
         private DeploymentService $deploymentService,
     ) {
         $this->deployments = $this->deploymentService->loadForProject($this);
+        $this->size = new ReflectionClass(Size::class)->newLazyProxy(function (): Size {
+            $size = 0;
+            foreach ($this->deployments as $deployment) {
+                $size += $deployment->size->bytes;
+            }
+
+            return new Size($size);
+        });
+
         $lastUpdate = null;
         foreach ($this->deployments as $deployment) {
             if ($lastUpdate === null || $deployment->lastUpdate > $lastUpdate) {

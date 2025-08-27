@@ -1,9 +1,10 @@
 services:
   rah:
-    image: andersundsehr/rah:1
+    image: andersundsehr/rah:latest
     init: true
     volumes:
-      - storage:/storage
+#      - storage:/storage
+      - ./storage-root:/storage
     environment:
       RAH_HOSTNAME: ${RAH_HOSTNAME:-rah.localhost}
       RAH_MAX_DISK_USAGE: '10G'
@@ -17,5 +18,5 @@ services:
       driver: "json-file"
       options:
         max-size: "100m"
-volumes:
-  storage:
+#volumes:
+#  storage:

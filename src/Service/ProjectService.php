@@ -11,6 +11,7 @@ use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 use function array_values;
 use function explode;
@@ -20,6 +21,7 @@ use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
 use function trim;
+use function uasort;
 
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
@@ -30,10 +32,11 @@ final readonly class ProjectService
         private Filesystem $filesystem,
         private UrlService $urlService,
         private DeploymentService $deploymentService,
-        private FileSizeService $fileSizeService,
         private string $rahStoragePath,
         private string $rahHostname,
         private NameShortingService $nameShortingService,
+        private Stopwatch $stopwatch,
+        private PathService $pathService,
     ) {
         if (!str_starts_with($this->rahStoragePath, '/')) {
             throw new RuntimeException('RAH_STORAGE_PATH should be an absolute path');
@@ -93,46 +96,59 @@ final readonly class ProjectService
      */
     public function loadAll(): array
     {
-        $projects = [];
+        $event = $this->stopwatch->start('project-service-load-all', 'load');
 
-        if (!$this->filesystem->exists($this->rahStoragePath)) {
-            return $projects;
-        }
+        try {
+            $projects = [];
 
-        foreach ((new Finder())->directories()->in($this->rahStoragePath)->depth(0) as $directory) {
-            $projectName = $directory->getBasename();
-            $project = $this->load($projectName);
-            if (!$project->deployments) {
-                $this->filesystem->remove($project->path);
-                continue;
+            if (!$this->filesystem->exists($this->rahStoragePath)) {
+                $event->stop();
+                return $projects;
             }
 
-            $projects[$projectName] = $project;
-        }
+            foreach (new Finder()->directories()->in($this->rahStoragePath)->depth(0) as $directory) {
+                $event->lap();
 
-        uasort($projects, fn(Project $a, Project $b): int => $b->lastUpdate <=> $a->lastUpdate);
+                $projectName = $directory->getBasename();
+
+                $project = $this->load($projectName);
+                if (!$project->deployments) {
+                    $this->filesystem->remove($this->pathService->getProjectPath($project));
+                    continue;
+                }
+
+                $projects[$projectName] = $project;
+            }
+
+            uasort($projects, fn(Project $a, Project $b): int => $b->lastUpdate <=> $a->lastUpdate);
+        } finally {
+            $event->stop();
+        }
 
         return $projects;
     }
 
     public function load(string $name): Project
     {
-        $path = $this->rahStoragePath . '/' . $name;
+        $event = $this->stopwatch->start('project-service-load-' . $name, 'load');
 
-        if (!$this->filesystem->exists($path)) {
-            throw new NotFoundHttpException('Project not found: ' . $name);
+        try {
+            $path = $this->pathService->getProjectPath($name);
+            if (!$this->filesystem->exists($path)) {
+                throw new NotFoundHttpException('Project not found: ' . $name);
+            }
+
+            $url = $this->urlService->getUrl($name);
+            return new Project($name, $path, $url, $this, $this->deploymentService);
+        } finally {
+            $event->stop();
         }
-
-        $url = $this->urlService->getUrl($name);
-        $size = $this->fileSizeService->getDirectorySize($path);
-
-        return new Project($name, $size, $path, $url, $this, $this->deploymentService);
     }
 
     public function create(string $projectName): Project
     {
-        $this->filesystem->mkdir($this->rahStoragePath . '/' . $projectName);
-        $this->filesystem->touch($this->rahStoragePath . '/' . $projectName);
+        $this->filesystem->mkdir($this->pathService->getProjectPath($projectName));
+        $this->filesystem->touch($this->pathService->getProjectPath($projectName));
 
         return $this->load($projectName);
     }
@@ -148,11 +164,12 @@ final readonly class ProjectService
     {
         $project = $this->create($settings->projectName);
 
-        $this->filesystem->mkdir($project->path . '/' . $settings->deployment);
-        $this->filesystem->touch($project->path . '/' . $settings->deployment);
+        $deploymentPath = $this->pathService->getDeploymentPath($project->name, $settings->deployment);
+        $this->filesystem->mkdir($deploymentPath);
+        $this->filesystem->touch($deploymentPath);
 
         $content = json_encode($settings, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        $this->filesystem->dumpFile($project->path . '/' . $settings->deployment . '/deployment.json', $content);
+        $this->filesystem->dumpFile($deploymentPath . '/deployment.json', $content);
 
         return $this->deploymentService->load($project->reload(), $settings->deployment);
     }

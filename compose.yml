@@ -1,6 +1,6 @@
 services:
   rah:
-    image: pluswerk/php-dev:nginx-8.3-alpine
+    image: pluswerk/php-dev:nginx-8.4-alpine
     init: true
     ipc: host
     privileged: true
