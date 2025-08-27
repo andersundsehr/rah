@@ -109,6 +109,8 @@ final class BackgroundCleanupOldDeploymentsCommand extends Command
         $message = 'DONE. Total size left: ' . Size::formatSize($totalSize) . ' / ' . Size::formatSize($this->maxBytes);
         $output->writeln('<fg=green>' . $message . '</>');
 
+        $this->fileSizeService->cacheStorageSize(new Size($totalSize));
+
         return Command::SUCCESS;
     }
 }

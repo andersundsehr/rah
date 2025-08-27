@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1-labs
-FROM pluswerk/php-dev:nginx-8.3-alpine AS build-micro-sfx
+FROM pluswerk/php-dev:nginx-8.4-alpine AS build-micro-sfx
 
 COPY ./build/build-micro-sfx.sh /app/build/build-micro-sfx.sh
 
 RUN cd /app/build && ./build-micro-sfx.sh
 
-FROM pluswerk/php-dev:nginx-8.3-alpine AS build
+FROM pluswerk/php-dev:nginx-8.4-alpine AS build
 
 ENV WEB_DOCUMENT_ROOT=/app/public \
     RAH_STORAGE_PATH=/storage \
@@ -48,7 +48,7 @@ RUN mkdir -p /output && \
     echo "APP_ENV=prod" > /output/.env && \
     echo "APP_DEBUG=0" >> /output/.env
 
-FROM webdevops/php-nginx:8.3-alpine AS production
+FROM webdevops/php-nginx:8.4-alpine AS production
 
 WORKDIR /app
 

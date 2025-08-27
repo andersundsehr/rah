@@ -43,7 +43,7 @@ final readonly class Settings
      */
     public static function fromEnv(array $options): self
     {
-        return (new SettingsService())->fromEnv($options);
+        return new SettingsService()->fromEnv($options);
     }
 
     public static function addOptionsToCommand(Command $command): void

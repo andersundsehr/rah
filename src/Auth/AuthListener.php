@@ -113,13 +113,9 @@ final readonly class AuthListener
             return false;
         }
 
-        foreach (array_filter(explode(',', (string)$this->rahBasicAuth)) as $auth) {
-            if (hash_equals($auth, $givenUser . ':' . $givenPassword)) {
-                return true;
-            }
-        }
+        $rahBasicAuthsArray = array_filter(explode(',', (string)$this->rahBasicAuth));
 
-        return false;
+        return array_any($rahBasicAuthsArray, fn($auth): bool => hash_equals($auth, $givenUser . ':' . $givenPassword));
     }
 
     private function testIpAuth(?string $clientIp): bool

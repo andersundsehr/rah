@@ -13,6 +13,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Serializer\Exception\MissingConstructorArgumentsException;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 use function Safe\filemtime;
 use function uasort;
@@ -24,6 +25,8 @@ final readonly class DeploymentService
         private FileSizeService $fileSizeService,
         private Filesystem $filesystem,
         private SerializerInterface $serializer,
+        private Stopwatch $stopwatch,
+        private PathService $pathService,
     ) {
     }
 
@@ -33,19 +36,23 @@ final readonly class DeploymentService
     public function loadForProject(Project $project): array
     {
         $deployments = [];
-        foreach ((new Finder())->directories()->in($project->path)->depth(0) as $directory) {
+        foreach (new Finder()->directories()->in($project->path)->depth(0) as $directory) {
             $deploymentName = $directory->getBasename();
-            $deployments[$deploymentName] = $this->load($project, $deploymentName);
+
+            $event = $this->stopwatch->start('deployment-service-load-' . $project->name . '-' . $deploymentName, 'load');
+            try {
+                $deployments[$deploymentName] = $this->load($project, $deploymentName);
+            } finally {
+                $event->stop();
+            }
         }
 
-        uasort($deployments, static fn(Deployment $a, Deployment $b): int => $b->lastUpdate <=> $a->lastUpdate);
-
-        return $deployments;
+        return $this->sortDeployments($deployments);
     }
 
     public function load(Project $project, string $name): Deployment
     {
-        $path = $project->path . '/' . $name;
+        $path = $this->pathService->getDeploymentPath($project, $name);
         $url = $this->urlService->getUrl($project->name, $name);
         $size = $this->fileSizeService->getDirectorySize($path);
 
@@ -62,9 +69,31 @@ final readonly class DeploymentService
             $deploymentSettings = $this->serializer->deserialize($file, Settings::class, 'json');
         } catch (MissingConstructorArgumentsException) {
             $this->filesystem->remove($path);
-            throw new RuntimeException('Deployment ' . $project->name . '--' . $name . ' did not have a valid deployment.json file. The deployment was removed.');
+            throw new RuntimeException(
+                'Deployment ' . $project->name . '--' . $name . ' did not have a valid deployment.json file. The deployment was removed.',
+            );
         }
 
         return new Deployment($project, $path, $name, $size, $url, $lastUpdate, $deploymentSettings);
+    }
+
+    /**
+     * Sort deployments by special names first, then by last update time.
+     *
+     * @param array<string, Deployment> $deployments
+     * @return array<string, Deployment>
+     */
+    private function sortDeployments(array $deployments): array
+    {
+        $deploymentOrder = 'main,master,staging,testing,development';
+        $specialOrder = array_flip(array_filter(array_map('trim', explode(',', $deploymentOrder))));
+
+        uasort($deployments, static function (Deployment $a, Deployment $b) use ($specialOrder): int {
+            $orderNumber = $specialOrder[$a->name] ?? $b->lastUpdate->getTimestamp();
+            $orderNumber2 = $specialOrder[$b->name] ?? $a->lastUpdate->getTimestamp();
+            return $orderNumber <=> $orderNumber2;
+        });
+
+        return $deployments;
     }
 }
