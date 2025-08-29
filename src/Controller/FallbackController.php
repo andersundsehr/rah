@@ -80,7 +80,7 @@ final class FallbackController extends AbstractController
                     $binaryFileResponse->headers->set('Content-Type', $contentType);
                 }
 
-                return $this->headersFileService->handleHeadersFile($directory, new Uri($request->getPathInfo()), $binaryFileResponse);
+                return $this->headersFileService->handleHeadersFile($directory, $request->getPathInfo(), $binaryFileResponse);
             }
         }
 

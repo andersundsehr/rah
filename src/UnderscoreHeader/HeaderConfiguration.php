@@ -45,11 +45,10 @@ final readonly class HeaderConfiguration
         }
     }
 
-    public function matches(UriInterface $requestUri): bool
+    public function matches(string $requestPath): bool
     {
-        $path = $requestUri->getPath();
         $matchRule = str_replace('\*', '.*', preg_quote($this->matchRule, '@'));
-        return (bool)preg_match('@^' . $matchRule . '$@', $path);
+        return (bool)preg_match('@^' . $matchRule . '$@', $requestPath);
     }
 
     /**
