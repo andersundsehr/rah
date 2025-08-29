@@ -8,7 +8,6 @@ use Generator;
 use App\UnderscoreHeader\HeaderConfiguration;
 use App\UnderscoreHeader\HeadersFileService;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Uri;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -133,12 +132,12 @@ class HeadersFileServiceTest extends TestCase
     #[DataProvider('provideMatchConfigurations')]
     public function matchConfigurations(
         array $configurations,
-        UriInterface $requestUri,
+        string $requestPath,
         ResponseInterface $response,
         ResponseInterface $expected
     ): void {
         $service = new HeadersFileService(new Filesystem());
-        $actual = $service->matchConfigurations($configurations, $requestUri, $response);
+        $actual = $service->matchConfigurations($configurations, $requestPath, $response);
         $this->assertEquals($expected, $actual);
     }
 
@@ -151,7 +150,7 @@ class HeadersFileServiceTest extends TestCase
                     'X-Content-Type-Options' => 'nosniff',
                 ]),
             ],
-            'requestUri' => new Uri('/any/path'),
+            'requestPath' => '/any/path',
             'response' => new Response(),
             'expected' => new Response()->withHeader('X-Frame-Options', 'DENY')->withHeader('X-Content-Type-Options', 'nosniff'),
         ];
@@ -161,7 +160,7 @@ class HeadersFileServiceTest extends TestCase
                     'X-Frame-Options' => 'DENY',
                 ]),
             ],
-            'requestUri' => new Uri('/any/path'),
+            'requestPath' => '/any/path',
             'response' => new Response(),
             'expected' => new Response(),
         ];
@@ -171,7 +170,7 @@ class HeadersFileServiceTest extends TestCase
                     'X-Frame-Options' => false,
                 ]),
             ],
-            'requestUri' => new Uri('/any/path'),
+            'requestPath' => '/any/path',
             'response' => new Response()->withHeader('X-Frame-Options', 'DENY')->withHeader('X-Content-Type-Options', 'nosniff'),
             'expected' => new Response()->withHeader('X-Content-Type-Options', 'nosniff'),
         ];
@@ -181,7 +180,7 @@ class HeadersFileServiceTest extends TestCase
                     'Content-Length' => '123456',
                 ]),
             ],
-            'requestUri' => new Uri('/any/path'),
+            'requestPath' => '/any/path',
             'response' => new Response(),
             'expected' => new Response(),
         ];

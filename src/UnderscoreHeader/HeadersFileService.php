@@ -24,7 +24,7 @@ final readonly class HeadersFileService
      * @param T $response
      * @return T
      */
-    public function handleHeadersFile(string $htdocsRoot, UriInterface $requestUri, ResponseInterface|Response $response): ResponseInterface|Response
+    public function handleHeadersFile(string $htdocsRoot, string $requestPath, ResponseInterface|Response $response): ResponseInterface|Response
     {
         if (!$this->filesystem->exists($htdocsRoot . '/_headers')) {
             return $response;
@@ -32,7 +32,7 @@ final readonly class HeadersFileService
 
         $configurations = $this->parse($this->filesystem->readFile($htdocsRoot . '/_headers'));
 
-        return $this->matchConfigurations($configurations, $requestUri, $response);
+        return $this->matchConfigurations($configurations, $requestPath, $response);
     }
 
     /**
@@ -126,10 +126,10 @@ final readonly class HeadersFileService
      * @param T $response
      * @return T
      */
-    public function matchConfigurations(array $configurations, UriInterface $requestUri, ResponseInterface|Response $response): ResponseInterface|Response
+    public function matchConfigurations(array $configurations, string $requestPath, ResponseInterface|Response $response): ResponseInterface|Response
     {
         foreach ($configurations as $configuration) {
-            if ($configuration->matches($requestUri)) {
+            if ($configuration->matches($requestPath)) {
                 return $configuration->apply($response);
             }
         }
