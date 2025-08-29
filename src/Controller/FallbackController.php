@@ -6,8 +6,9 @@ use App\Dto\Deployment;
 use App\Service\StorageUsageService;
 use App\Service\ProjectService;
 use App\Service\UrlService;
+use App\UnderscoreHeader\HeadersFileService;
+use GuzzleHttp\Psr7\Uri;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Routing\Attribute\Route;
 
-use function dirname;
 use function explode;
 use function file_exists;
 use function is_dir;
@@ -33,6 +33,7 @@ final class FallbackController extends AbstractController
         private readonly ProjectService $projectService,
         private readonly UrlService $urlService,
         private readonly StorageUsageService $diskUsageService,
+        private readonly HeadersFileService $headersFileService,
     ) {
     }
 
@@ -79,7 +80,7 @@ final class FallbackController extends AbstractController
                     $binaryFileResponse->headers->set('Content-Type', $contentType);
                 }
 
-                return $binaryFileResponse;
+                return $this->headersFileService->handleHeadersFile($directory, new Uri($request->getPathInfo()), $binaryFileResponse);
             }
         }
 

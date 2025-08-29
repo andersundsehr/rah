@@ -54,6 +54,99 @@ build:
     url: https://rah.andersundsehr.com/redirect?project=$CI_PROJECT_PATH_SLUG&deployment=$CI_COMMIT_REF_SLUG&path=.
 ````
 
+### bitbucket Pipelines example:
+````yaml
+pipelines:
+  default:
+    - step:
+        name: Build and Deploy
+        image: node:22
+        script:
+          - yarn
+          - yarn lint
+          - yarn test:unit
+          - yarn build
+          - source <(curl --fail-with-body -sSL https://rah.andersundsehr.com/install.sh)
+          - rah upload .histoire/dist .
+````
+
+### github Actions example:
+````yaml
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: yarn
+      - run: yarn lint
+      - run: yarn test:unit
+      - run: yarn build
+      - name: Install rah
+        run: source <(curl --fail-with-body -sSL https://rah.andersundsehr.com/install.sh)
+      - name: Upload
+        run: rah upload .histoire/dist .
+````
+
+
+### _headers file: Custom HTTP headers for your deployment
+
+You can control HTTP headers for your deployed static site by adding a `_headers` file to the root of your deployment. This allows you to set security headers, cache control, and more, on a per-path basis.
+
+#### Syntax
+- Each rule starts with a path pattern (e.g. `/*`, `/api/*`, `/index.html`).
+- Under each rule, add one or more indented header lines in the format `Header-Name: value`.
+- Header lines **must be indented** (with spaces or tabs).
+- Header names may only contain letters, digits, and hyphens.
+- Lines starting with `#` are comments and are ignored.
+- Empty lines are ignored.
+
+#### Example
+```
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+# This is a comment
+/other
+  X-Frame-Options: SAMEORIGIN
+```
+
+#### Validation and error handling
+- If a rule is defined without any headers, an error is reported with the line number.
+- If a header line is not indented, an error is reported with the line number.
+- If a header name contains invalid characters, an error is reported with the line number.
+- If a path rule contains a colon (`:`), an error is reported (placeholders are not supported).
+
+#### Skipped headers
+For security and compatibility, the following headers are ignored and will not be set:
+- Accept-Ranges
+- Age
+- Allow
+- Alt-Svc
+- Connection
+- Content-Encoding
+- Content-Length
+- Content-Range
+- Date
+- Server
+- Trailer
+- Transfer-Encoding
+- Upgrade
+
+This feature allows you to easily add security and caching headers to your static deployments, similar to Netlify's `_headers` file format.
+
 ### environment variables client
 
 ENV variables:
@@ -188,7 +281,6 @@ docker compose exec --user 1000:1000 rah composer test
 ```
 
 The HTML report will be available in the `build/coverage` directory. Open `build/coverage/index.html` in a web browser to view detailed coverage information.
-
 
 ###### Future ideas:
 

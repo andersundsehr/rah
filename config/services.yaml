@@ -29,3 +29,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Disable CSP for the web debug toolbar
+    Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener:
+        arguments:
+            $cspHandler: null
+    web_profiler.debug_toolbar:
+        class: Symfony\Bundle\WebProfilerBundle\EventListener\WebDebugToolbarListener
+        arguments:
+            $cspHandler: null
