@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Service\UrlService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,7 @@ final class RedirectController extends AbstractController
         #[MapQueryParameter] ?string $project = null,
         #[MapQueryParameter] ?string $deployment = null,
         #[MapQueryParameter] string $path = '',
-    ): Response {
+    ): RedirectResponse {
         $path = trim($path, '/');
         if ($path === '.') {
             $path = '';

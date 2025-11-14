@@ -86,7 +86,7 @@ final readonly class DeploymentService
     private function sortDeployments(array $deployments): array
     {
         $deploymentOrder = 'main,master,staging,testing,development';
-        $specialOrder = array_flip(array_filter(array_map('trim', explode(',', $deploymentOrder))));
+        $specialOrder = array_flip(array_filter(array_map(trim(...), explode(',', $deploymentOrder))));
 
         uasort($deployments, static function (Deployment $a, Deployment $b) use ($specialOrder): int {
             $orderNumber = $specialOrder[$a->name] ?? $b->lastUpdate->getTimestamp();
