@@ -18,6 +18,10 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.4', '8.5']
     steps:
       -
         name: Checkout
@@ -38,7 +42,7 @@ jobs:
             type=semver,pattern={{major}}
       -
         name: Login to DockerHub
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && matrix.php == '8.5'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -52,10 +56,11 @@ jobs:
         with:
           context: .
           file: build/Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' && matrix.php == '8.5' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
+            PHP_VERSION=${{ matrix.php }}
             LAST_GIT_TAG=${{ steps.meta.outputs.version }}

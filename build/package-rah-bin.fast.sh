@@ -2,9 +2,11 @@
 
 set -euo pipefail
 
-wget https://dl.static-php.dev/static-php-cli/common/php-8.4.11-micro-linux-x86_64.tar.gz
-tar -zxvf php-8.4.11-micro-linux-x86_64.tar.gz
-rm php-8.4.11-micro-linux-x86_64.tar.g*
+PHP_MICRO_VERSION=${PHP_MICRO_VERSION:-8.5.11}
+archive="php-${PHP_MICRO_VERSION}-micro-linux-x86_64.tar.gz"
+wget "https://dl.static-php.dev/static-php-cli/common/${archive}"
+tar -zxvf "$archive"
+rm "$archive"
 cat micro.sfx ../rah.phar > ../public/.rah/rah
 chmod +x ../public/.rah/rah
 
