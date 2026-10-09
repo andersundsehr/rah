@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Auth;
 
 use App\Attribute\ApiTokenRequired;
@@ -45,7 +47,7 @@ final readonly class AuthListener
     private function reasonAbout(ControllerEvent $event): AuthResult
     {
         if ($event->getAttributes(NoAuthRequiredAtAll::class)) {
-            return new AuthResult(true, 'NoAuthRequiredAtAll for Controller ' . $event->getRequest()->get('_controller', '???'));
+            return new AuthResult(true, 'NoAuthRequiredAtAll for Controller ' . $event->getRequest()->attributes->get('_controller', '???'));
         }
 
         if ($event->getAttributes(ApiTokenRequired::class)) {
@@ -115,7 +117,7 @@ final readonly class AuthListener
 
         $rahBasicAuthsArray = array_filter(explode(',', (string)$this->rahBasicAuth));
 
-        return array_any($rahBasicAuthsArray, fn($auth): bool => hash_equals($auth, $givenUser . ':' . $givenPassword));
+        return array_any($rahBasicAuthsArray, fn(string $auth): bool => hash_equals($auth, $givenUser . ':' . $givenPassword));
     }
 
     private function testIpAuth(?string $clientIp): bool

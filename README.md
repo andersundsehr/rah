@@ -292,3 +292,7 @@ The HTML report will be available in the `build/coverage` directory. Open `build
   - add url to branch
   - add url to pipeline
   - lookup if branch is deleted and than delete the deployment?
+
+## PHP runtime
+
+Development and production builds default to PHP 8.5. PHP 8.4 remains supported: set `PHP_VERSION=8.4` for Compose, or pass `--build-arg PHP_VERSION=8.4` to Docker. The micro-runtime build uses the same PHP version.

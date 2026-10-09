@@ -19,7 +19,7 @@ class DirectoryAutoCompletionTest extends TestCase
     #[DataProvider('provideTestCases')]
     public function __invoke(string $input, array $expected): void
     {
-        $directoryAutoCompletion = new DirectoryAutoCompletion(dirname(__DIR__) . '/_fixture_/');
+        $directoryAutoCompletion = new DirectoryAutoCompletion(__DIR__ . '/../_fixture_/');
         self::assertEquals($expected, $directoryAutoCompletion($input));
     }
 
