@@ -18,11 +18,6 @@ use function str_starts_with;
 )]
 class VersionCheckCommand extends Command
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     protected function configure(): void
     {
         $this

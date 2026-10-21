@@ -1,11 +1,16 @@
 # syntax=docker/dockerfile:1-labs
-FROM pluswerk/php-dev:nginx-8.4-alpine AS build-micro-sfx
+FROM alpine:3.24 AS build-micro-sfx
 
-COPY ./build/build-micro-sfx.sh /app/build/build-micro-sfx.sh
+RUN apk add --no-cache bash curl ca-certificates
+
+COPY ./build/build-micro-sfx.sh ./build/check-php-version.php ./build/check-micro-php-version.sh /app/build/
 
 RUN cd /app/build && ./build-micro-sfx.sh
 
-FROM pluswerk/php-dev:nginx-8.4-alpine AS build
+FROM webdevops/php-nginx-dev:8.5-alpine AS build
+
+COPY ./build/check-php-version.php /usr/local/bin/check-php-version.php
+RUN php /usr/local/bin/check-php-version.php
 
 ENV WEB_DOCUMENT_ROOT=/app/public \
     RAH_STORAGE_PATH=/storage \
@@ -48,7 +53,10 @@ RUN mkdir -p /output && \
     echo "APP_ENV=prod" > /output/.env && \
     echo "APP_DEBUG=0" >> /output/.env
 
-FROM webdevops/php-nginx:8.4-alpine AS production
+FROM webdevops/php-nginx:8.5-alpine AS production
+
+COPY ./build/check-php-version.php /usr/local/bin/check-php-version.php
+RUN php /usr/local/bin/check-php-version.php
 
 WORKDIR /app
 
