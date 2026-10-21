@@ -7,7 +7,7 @@ COPY ./build/build-micro-sfx.sh ./build/check-php-version.php ./build/check-micr
 
 RUN cd /app/build && ./build-micro-sfx.sh
 
-FROM pluswerk/php-dev:nginx-8.5-alpine AS build
+FROM webdevops/php-nginx-dev:8.5-alpine AS build
 
 COPY ./build/check-php-version.php /usr/local/bin/check-php-version.php
 RUN php /usr/local/bin/check-php-version.php
