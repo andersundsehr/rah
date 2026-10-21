@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be46c030383919d5127a78fc94f49409",
+    "content-hash": "b7952fb76f2320938109c40a4b42f1f6",
     "packages": [
         {
             "name": "ondram/ci-detector",
@@ -11690,7 +11690,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "~8.5.0",
+        "php": "~8.5.12",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-zip": "*"

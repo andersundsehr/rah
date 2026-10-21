@@ -3,7 +3,7 @@
   "license": "proprietary",
   "type": "project",
   "require": {
-    "php": "~8.5.0",
+    "php": "~8.5.12",
     "ext-ctype": "*",
     "ext-iconv": "*",
     "ext-zip": "*",

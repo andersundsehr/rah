@@ -15,9 +15,11 @@ EXTENSIONS=pcntl,ctype,zip,xml,exif,iconv,mbstring,phar,sockets,zlib,tokenizer,f
 ./spc doctor --auto-fix
 ./spc install-pkg upx
 
-./spc download --with-php=8.5 --for-extensions $EXTENSIONS
+./spc download --with-php=8.5.12 --for-extensions $EXTENSIONS
 
 ./spc build --with-micro-fake-cli --with-upx-pack --build-micro $EXTENSIONS
+
+./check-micro-php-version.sh buildroot/bin/micro.sfx
 
 echo "Build completed successfully!"
 echo " file: buildroot/bin/micro.sfx"
