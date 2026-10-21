@@ -15,7 +15,8 @@ EXTENSIONS=pcntl,ctype,zip,xml,exif,iconv,mbstring,phar,sockets,zlib,tokenizer,f
 ./spc doctor --auto-fix
 ./spc install-pkg upx
 
-./spc download --with-php=8.5.12 --for-extensions $EXTENSIONS
+# SPC selects the latest release in a major.minor series; check the compiled version below.
+./spc download --with-php=8.5 --for-extensions $EXTENSIONS
 
 ./spc build --with-micro-fake-cli --with-upx-pack --build-micro $EXTENSIONS
 
