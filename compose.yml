@@ -1,6 +1,6 @@
 services:
   rah:
-    image: webdevops/php-nginx-dev:8.5-alpine
+    image: ghcr.io/pluswerk/php-dev:nginx-8.5-alpine
     init: true
     ipc: host
     privileged: true
