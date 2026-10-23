@@ -292,3 +292,7 @@ The HTML report will be available in the `build/coverage` directory. Open `build
   - add url to branch
   - add url to pipeline
   - lookup if branch is deleted and than delete the deployment?
+
+## PHP runtime
+
+Development, production and micro-runtime builds use PHP 8.5.

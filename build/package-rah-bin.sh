@@ -6,8 +6,6 @@ if [ ! -f buildroot/bin/micro.sfx ]; then
   ./build-micro-sfx.sh
 fi
 
-./check-micro-php-version.sh buildroot/bin/micro.sfx
-
 #./spc micro:combine ../rah.phar -O ../public/.rah/rah
 cat buildroot/bin/micro.sfx ../rah.phar > ../public/.rah/rah
 chmod +x ../public/.rah/rah

@@ -47,7 +47,7 @@ final readonly class AuthListener
     private function reasonAbout(ControllerEvent $event): AuthResult
     {
         if ($event->getAttributes(NoAuthRequiredAtAll::class)) {
-            return new AuthResult(true, 'NoAuthRequiredAtAll for Controller ' . $event->getRequest()->get('_controller', '???'));
+            return new AuthResult(true, 'NoAuthRequiredAtAll for Controller ' . $event->getRequest()->attributes->get('_controller', '???'));
         }
 
         if ($event->getAttributes(ApiTokenRequired::class)) {
