@@ -15,7 +15,7 @@
     "symfony/flex": "^2.11.0",
     "symfony/framework-bundle": "^7.4.21",
     "symfony/http-client": "^7.4.21",
-    "symfony/mime": "^7.4.19",
+    "symfony/mime": "^7.4.22",
     "symfony/property-access": "^7.4.16",
     "symfony/property-info": "^7.4.20",
     "symfony/runtime": "^7.4.21",
